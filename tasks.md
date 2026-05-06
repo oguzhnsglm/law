@@ -114,7 +114,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **G6 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. 3 persona (P1 solo Mert, P2 büro ortağı Ayşegül, P3 stajyer Kerem) — her biri için bağlam, ekipman, hedefler, ağrı noktaları, tasarım sonuçları. Personalar **kurmaca** olarak işaretlendi (gerçek kişi değil). User journey 3 persona için saatlik akış + 3 cross-persona akış (onboarding, senkron kırılması, KVKK silme) içeriyor. **Eksikler:** (1) gerçek kullanıcı görüşmesi yapılmadı; persona detayları sektör gözlemine dayalı, beta testle valide edilmeli; (2) Faz 2 paylaşım modeli J3'te taslak — kesin tasarım Faz 2 başlamadan revize edilecek.
 
-### G7. Hata Mesajı Kataloğu (`docs/design/`)
+### G7. Hata Mesajı Kataloğu (`docs/design/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 0.5 gün. **Çıktı:**
 
 - `docs/design/error_catalog.md` — Kullanıcıya gösterilecek tüm hata türleri için kullanıcı dostu TR + EN metinler:
@@ -129,6 +129,8 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
   
   Her hata için: kısa başlık, açıklama, kullanıcının yapabileceği aksiyon.
 
+**G7 Tamamlanma Notu (2026-05-06):** 1 dosya yazıldı. 30 hata ID'si (E001–E030) — her biri için TR/EN başlık+gövde, aksiyon, kanal (Snackbar/Dialog/Banner/BottomSheet/EmptyState/InlineBanner), ARB anahtarı referansı, geliştirici notu. Loglama, erişilebilirlik, test stratejisi de dokümante. **Eksikler/yapılacaklar:** (1) Sadece 10 hata anahtarı G4 ARB'lerinde mevcut; kalan 20 hata için ARB ekleme G7 sonrası iş listesine yazıldı (dosya sonunda); (2) ARB anahtar konvansiyonu E0XX'e normalize edilecek (ana ajan veya G4 revizyonu); (3) Sentry backend bağlanması Faz 5 işi.
+
 ---
 
 ## Yapılacaklar Tablosu
@@ -141,7 +143,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 | G4 | Lokalizasyon ARB | 0.5 gün | **(YAPILDI — 2026-05-06)** — ~158 anahtar; pubspec/l10n.yaml entegrasyonu ana ajana |
 | G5 | Rakip Analizi + UYAP akış | 0.5 gün | **(YAPILDI — 2026-05-06)** — fiyat/özellik snapshot 2026-05; refresh önerilir |
 | G6 | Persona + User Journey | 0.5 gün | **(YAPILDI — 2026-05-06)** — kurmaca personalar; beta sonrası valide edilecek |
-| G7 | Hata Mesajı Kataloğu | 0.5 gün | bekliyor |
+| G7 | Hata Mesajı Kataloğu | 0.5 gün | **(YAPILDI — 2026-05-06)** — 30 hata ID; 20'sinin ARB anahtarı eklenecek |
 
 **Toplam: ~4.5 gün.**
 
@@ -150,3 +152,17 @@ Sıra serbest, **bağımlılık yok** — her görev kendi başına başlatılı
 ## Bittiğinde
 
 Tüm görevler tamamlanınca bu dosyaya `**(TÜMÜ TAMAMLANDI — tarih)**` notu düş, ana ajan PR'ları merge'leyince tasks.md'yi `tasks_archive_phase0.md` olarak yeniden adlandır.
+
+---
+
+**(TÜMÜ TAMAMLANDI — 2026-05-06)**
+
+İkinci ajan görevlerinin (G1–G7) tamamı tek oturumda, doğrudan `main` dalına atomik commit'ler halinde tamamlandı (PR/branch akışı yerine — kullanıcı bu cihazda push yapmıyor). Her görev için tamamlanma notu içinde "eksikler" satırı bulunuyor; özet:
+
+- **Yayın öncesi doldurulacak placeholder'lar:** kuruluş bilgileri (unvan, MERSİS, KEP, e-posta, adres, VERBİS, başvuru no, domain) — hukuki ve marketing dosyalarında köşeli parantezde işaretli.
+- **Bilişim hukukçusu onayı bekleyen:** G1 hukuki paket (KVKK, gizlilik TR/EN, kullanım şartları, UYAP disclaimer).
+- **Tasarımcıya devredilenler:** G2 screenshot ve ikon görselleri, G3 Figma yüksek çözünürlüklü mockup'lar.
+- **Profesyonel çeviri review'ı yayın öncesi:** G4 EN ARB (App Store onayı için).
+- **Beta sonrası valide edilecek:** G6 personalar (kurmaca, gerçek görüşme yapılmadı).
+- **G7 → G4 senkron eksiği:** 20 hata için ARB anahtarı G4 dosyalarına eklenmeli; G4 revizyonu sırasında E0XX konvansiyonuna geçilecek.
+- **Ana ajan görevi:** `pubspec.yaml` `flutter_localizations` + `l10n.yaml` entegrasyonu (Faz 3'te işlenecek).
