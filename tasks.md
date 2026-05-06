@@ -87,7 +87,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **G3 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı. Design system M3 token'larıyla light + dark renk paleti, Inter tipografi ölçeği, 8'lik spacing, elevation, radius, ikonografi, motion ve erişilebilirlik kurallarını kapsıyor. Wireframes 7 ana ekran + modal pattern + tablet adaptasyonu içeriyor (ASCII tabanlı, Figma'ya çevrilecek). Component inventory 5 katmanlı (atom/molekül/organizm/şablon/yardımcı) ~25 widget tanımı + bağımlılık haritası. **Eksikler:** (1) gerçek Figma yüksek çözünürlüklü mockup'lar tasarımcıya bırakıldı; (2) tablet detay master-detail layout sadece özet düzeyinde — gerçek pikselli mockup yok; (3) `error_catalog.md` G7 görevinde ayrıca yapılacak (wireframe'lerde sadece referans verildi).
 
-### G4. Lokalizasyon Hazırlığı (`assets/i18n/`)
+### G4. Lokalizasyon Hazırlığı (`assets/i18n/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 0.5 gün. **Çıktı:**
 
 - `assets/i18n/tr.arb` — Türkçe string'ler (ARB formatı)
@@ -95,6 +95,8 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 - `assets/i18n/README.md` — Anahtar isimlendirme kuralı, yeni metin ekleme rehberi
 
 İlk versiyonda en az şu alanlar dolu olsun: onboarding, ana navigasyon, sync mesajları, hata mesajları, izin diyalogları, settings, common (Save/Cancel/Delete vb.). ~80-150 anahtar yeterli.
+
+**G4 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı: `tr.arb` (kaynak), `en.arb` (App Store EN için), `README.md` (translator brief + workflow). ~158 anahtar — hedef aralıkta. ICU MessageFormat (plural, placeholder) örnekleriyle. **Eksikler:** (1) `l10n.yaml` ve `pubspec.yaml` `flutter_localizations` entegrasyonu ana ajan görevidir (Faz 3); (2) error_catalog (G7) sonrasında error_* anahtarları tekrar gözden geçirilip senkronlanacak; (3) gerçek profesyonel çeviri review'ı yayın öncesi yapılmalı (özellikle EN, App Store onayı için).
 
 ### G5. Rakip Analizi (`docs/research/`)
 **Süre:** 0.5 gün. **Çıktı:**
@@ -132,7 +134,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 | G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** — kuruluş bilgileri placeholder; bilişim hukukçusu onayı bekliyor |
 | G2 | Store Metadata | 0.5 gün | **(YAPILDI — 2026-05-06)** — brief tamam; gerçek görseller (screenshot/ikon) tasarımcıya bırakıldı |
 | G3 | Design System + Wireframe | 1 gün | **(YAPILDI — 2026-05-06)** — text-only; Figma mockup tasarımcıya |
-| G4 | Lokalizasyon ARB | 0.5 gün | bekliyor |
+| G4 | Lokalizasyon ARB | 0.5 gün | **(YAPILDI — 2026-05-06)** — ~158 anahtar; pubspec/l10n.yaml entegrasyonu ana ajana |
 | G5 | Rakip Analizi + UYAP akış | 0.5 gün | bekliyor |
 | G6 | Persona + User Journey | 0.5 gün | bekliyor |
 | G7 | Hata Mesajı Kataloğu | 0.5 gün | bekliyor |
