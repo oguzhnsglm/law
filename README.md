@@ -4,6 +4,16 @@ Avukatların UYAP üzerindeki dosya ve duruşma bilgilerini mobil cihazlarına o
 
 ---
 
+## 0. İlerleme Takibi Kuralı
+
+> **Kural:** README'de listelenen herhangi bir adım veya görev **tamamlandığında**, o satırın sonuna `**(YAPILDI — YYYY-MM-DD)**` etiketi eklenir. Etiket atılmadan iş "tamamlandı" sayılmaz. Bu sayede planın hangi kısımlarının bittiği bir bakışta görülür.
+>
+> Örnek: `- [x] Repo init **(YAPILDI — 2026-05-06)**`
+>
+> İptal edilen veya kapsam dışına çıkan maddeler için `**(İPTAL — sebep)**` etiketi kullanılır.
+
+---
+
 ## 1. Vizyon ve Hedef Kullanıcı
 
 **Hedef kullanıcı:** Türkiye'de aktif avukatlar (UYAP Avukat Portal kullanıcıları).
@@ -208,6 +218,8 @@ Her dosya `dosya_no` üzerinden, her duruşma `(case_id, durusma_tarihi)` kombin
 - KVKK aydınlatma metni hazırlığı (bilişim hukuku danışmanlığı)
 - UYAP Avukat Web Servisleri için Adalet Bakanlığı'na resmi başvuru
 - Domain + Apple Developer + Google Play Developer hesapları
+- Git repo init + remote bağlama **(YAPILDI — 2026-05-06)**
+- README ve proje planı **(YAPILDI — 2026-05-06)**
 
 ### Faz 1 — Veri Katmanı (Hafta 1-2)
 - Flutter projesi initialize, klasör yapısı
@@ -321,7 +333,436 @@ law/
 
 ---
 
-## 12. MVP Sonrası (Faz 2+)
+## 12. Geliştirme Rehberi (Detaylı)
+
+Bu bölüm, projeyi sıfırdan ayağa kaldırmak ve UYAP entegrasyonunu adım adım uygulamak isteyen geliştirici için rehberdir.
+
+### 12.1. Geliştirme Ortamı Kurulumu
+
+**Gerekli araçlar:**
+
+```bash
+# Flutter SDK (3.24+)
+# https://docs.flutter.dev/get-started/install
+flutter --version
+
+# iOS geliştirme (sadece macOS)
+xcode-select --install
+sudo gem install cocoapods
+
+# Android geliştirme
+# Android Studio + Android SDK 34+
+# JDK 17
+
+flutter doctor   # tüm bileşenler ✓ olmalı
+```
+
+**Editör:** VS Code + Flutter/Dart eklentileri, veya Android Studio.
+
+**Cihaz/emulator:** Geliştirme için Android emülatör + iOS simülatör; **WebView akışını mutlaka gerçek cihazda test et** (e-Devlet bazen emülatörü tetikler).
+
+### 12.2. Projeyi Bootstrap Etme
+
+```bash
+# Repo köküne git
+cd law
+
+# Flutter projesi oluştur (mevcut dizine, README'yi koruyarak)
+flutter create --org tr.com.law --project-name law \
+  --platforms=android,ios --description "UYAP Avukat Takvim Asistanı" .
+
+# pubspec.yaml'a paketleri ekle
+flutter pub add flutter_riverpod go_router flutter_inappwebview \
+  drift sqlcipher_flutter_libs drift_flutter \
+  device_calendar flutter_local_notifications \
+  flutter_secure_storage dio html xml \
+  timezone intl logger
+
+# Dev bağımlılıkları
+flutter pub add --dev drift_dev build_runner riverpod_generator \
+  riverpod_lint custom_lint mocktail
+
+flutter pub get
+```
+
+**iOS minimum platform:** `ios/Podfile` içinde `platform :ios, '13.0'` (WebView ve EventKit için).
+
+**Android minimum SDK:** `android/app/build.gradle` içinde `minSdkVersion 23`, `targetSdkVersion 34`.
+
+### 12.3. Native İzin Konfigürasyonu
+
+**iOS — `ios/Runner/Info.plist`:**
+
+```xml
+<key>NSCalendarsUsageDescription</key>
+<string>Duruşmalarınızı takviminize eklemek için izin gerekiyor.</string>
+<key>NSCalendarsFullAccessUsageDescription</key>
+<string>Duruşmalarınızı takviminize eklemek için izin gerekiyor.</string>
+<key>NSUserNotificationsUsageDescription</key>
+<string>Duruşma hatırlatmaları için bildirim izni gerekiyor.</string>
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoadsInWebContent</key>
+  <true/>
+</dict>
+```
+
+**Android — `android/app/src/main/AndroidManifest.xml`:**
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.READ_CALENDAR" />
+<uses-permission android:name="android.permission.WRITE_CALENDAR" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+```
+
+### 12.4. Veritabanı (Drift + SQLCipher)
+
+**`lib/core/db/database.dart`:**
+
+```dart
+@DriftDatabase(tables: [Cases, Hearings, SyncLogs, UserNotes])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase(super.executor);
+
+  @override
+  int get schemaVersion => 1;
+
+  static QueryExecutor _open() {
+    return driftDatabase(
+      name: 'law_app',
+      native: const DriftNativeOptions(
+        // SQLCipher anahtarı secure storage'dan
+        databasePath: ...,
+      ),
+    );
+  }
+}
+```
+
+**Şifreleme anahtarı:**
+- İlk açılışta 32 byte random key üret
+- `flutter_secure_storage` ile sakla (iOS Keychain / Android Keystore)
+- DB açılışında oku, SQLCipher'a `PRAGMA key` olarak ver
+
+**Migration:** Drift `MigrationStrategy` ile schema versiyonlama; UYAP şema değişimleri parser'da, DB şemasında değil.
+
+### 12.5. UYAP'tan Veri Çekme — Detaylı Strateji
+
+#### Adım 1: WebView Açma ve Login Akışı
+
+**`lib/features/sync/uyap_webview.dart`:**
+
+```dart
+class UyapWebView extends StatefulWidget {
+  final ValueChanged<UyapSession> onLoginSuccess;
+  // ...
+}
+
+class _UyapWebViewState extends State<UyapWebView> {
+  late InAppWebViewController _controller;
+
+  static const _eDevletLoginUrl =
+      'https://giris.turkiye.gov.tr/Giris/gir';
+  static const _uyapAvukatPortal =
+      'https://avukatbeta.uyap.gov.tr';
+
+  @override
+  Widget build(BuildContext context) {
+    return InAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri(_eDevletLoginUrl)),
+      initialSettings: InAppWebViewSettings(
+        userAgent: 'Mozilla/5.0 ...', // gerçek mobile UA
+        clearCache: false,            // session persist edilsin
+        thirdPartyCookiesEnabled: true,
+        sharedCookiesEnabled: true,
+      ),
+      onWebViewCreated: (c) => _controller = c,
+      onLoadStop: (c, url) async {
+        if (url == null) return;
+        // 1. e-Devlet login başarılı mı?
+        if (url.host.contains('turkiye.gov.tr') &&
+            url.path.contains('Anasayfa')) {
+          // UYAP'a yönlendir
+          await c.loadUrl(
+            urlRequest: URLRequest(url: WebUri(_uyapAvukatPortal)),
+          );
+        }
+        // 2. UYAP Avukat Portal'a vardık mı?
+        if (url.host.contains('uyap.gov.tr') &&
+            url.path.contains('avukat')) {
+          final cookies =
+              await CookieManager.instance().getCookies(url: url);
+          widget.onLoginSuccess(UyapSession(cookies: cookies));
+        }
+      },
+    );
+  }
+}
+```
+
+**Kullanıcı deneyimi:**
+- WebView **görünür** açılır (kullanıcı login'i kendisi yapar)
+- Login başarılı olduğunda WebView üstüne "Bağlanıyor..." overlay'i koyup arka planda veri çek, bitince kapat
+
+#### Adım 2: Veri Çekme — Üç Olası Yol
+
+**Yol A — XML Export Endpoint Tetikleme (Tercih Edilen):**
+
+UYAP Avukat Portal'da "Dosyalarım → XML olarak indir" benzeri bir endpoint var. Login session'ı geçerliyken JavaScript injection ile tetiklenebilir:
+
+```dart
+final xmlContent = await _controller.evaluateJavascript(source: '''
+  (async () => {
+    const resp = await fetch('/avukat/dosyaListesiXmlExport', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Accept': 'application/xml' },
+      body: new URLSearchParams({
+        baslangicTarihi: '01.01.2025',
+        bitisTarihi: '31.12.2026',
+      }),
+    });
+    return await resp.text();
+  })()
+''');
+```
+
+Endpoint'in tam path'i UYAP'ın canlı portalında DevTools network sekmesi ile tespit edilir. **Bu adım ilk reverse-engineering işidir** ve `docs/uyap_parse_schema.md` içinde dokümante edilir.
+
+**Yol B — HTML Sayfa Parse:**
+
+XML endpoint çalışmazsa veya bulunamazsa, dosya listesi sayfasının HTML'ini çek ve `package:html` ile parse et:
+
+```dart
+final html = await _controller.evaluateJavascript(source: '''
+  (async () => {
+    const resp = await fetch('/avukat/dosyalarim', { credentials: 'include' });
+    return await resp.text();
+  })()
+''');
+
+final document = html_parser.parse(html);
+final rows = document.querySelectorAll('table.dosya-listesi tr');
+for (final row in rows) {
+  final cells = row.querySelectorAll('td');
+  // ... model'e map et
+}
+```
+
+**Yol C — Sayfa Sayfa Detay Çekme:**
+
+Her dosyanın detay sayfasında safahat, taraflar, duruşmalar var. Liste sayfasından dosya ID'leri al, paralel olarak detay sayfalarını fetch et (2-3 paralel max, UYAP rate limit var).
+
+#### Adım 3: Parser Mimarisi
+
+**`lib/core/parse/uyap_xml_parser.dart`:**
+
+```dart
+class UyapXmlParser {
+  ParseResult parse(String xmlContent) {
+    final doc = XmlDocument.parse(xmlContent);
+    final cases = <CaseModel>[];
+    final hearings = <HearingModel>[];
+
+    for (final dosyaEl in doc.findAllElements('Dosya')) {
+      final caseModel = CaseModel(
+        dosyaNo: _text(dosyaEl, 'DosyaNo'),
+        mahkemeAdi: _text(dosyaEl, 'MahkemeAdi'),
+        // ...
+      );
+      cases.add(caseModel);
+
+      for (final durusmaEl in dosyaEl.findElements('Durusma')) {
+        hearings.add(HearingModel(
+          caseDosyaNo: caseModel.dosyaNo,
+          durusmaTarihi: _parseTrDate(_text(durusmaEl, 'Tarih')),
+          salon: _text(durusmaEl, 'Salon'),
+          // ...
+        ));
+      }
+    }
+
+    return ParseResult(cases: cases, hearings: hearings);
+  }
+
+  DateTime _parseTrDate(String s) {
+    // "01.05.2026 14:30" veya "2026-05-01T14:30" gibi varyantlar
+    for (final fmt in ['dd.MM.yyyy HH:mm', 'yyyy-MM-ddTHH:mm']) {
+      try {
+        return DateFormat(fmt, 'tr_TR').parseStrict(s);
+      } catch (_) {}
+    }
+    throw FormatException('Bilinmeyen tarih formatı: $s');
+  }
+}
+```
+
+**Encoding handling:** UYAP bazen Windows-1254 (Türkçe) çıktı veriyor. `Encoding` tespit et, gerekirse decode et.
+
+**Stream parse:** Büyük dosyalar (5-10 MB) için `XmlEventReader` kullan, tüm dokümanı belleğe yükleme.
+
+#### Adım 4: Idempotent Merge
+
+**`lib/features/sync/sync_service.dart`:**
+
+```dart
+class SyncService {
+  Future<SyncSummary> mergeIntoDb(ParseResult parsed) async {
+    int added = 0, updated = 0;
+    await db.transaction(() async {
+      for (final c in parsed.cases) {
+        final existing = await casesDao.byDosyaNo(c.dosyaNo);
+        if (existing == null) {
+          await casesDao.insert(c);
+          added++;
+        } else if (existing.hashOf() != c.hashOf()) {
+          await casesDao.update(existing.id, c);
+          updated++;
+        }
+      }
+      for (final h in parsed.hearings) {
+        // (case_id, durusma_tarihi) üzerinden tekille
+        await hearingsDao.upsert(h);
+      }
+    });
+    return SyncSummary(added: added, updated: updated);
+  }
+}
+```
+
+**Kullanıcı manuel notları silinmesin:** `user_notes` tablosu ayrı, UYAP senkronu hiç dokunmuyor.
+
+### 12.6. Native Takvim Senkronu
+
+**`lib/core/calendar/calendar_service.dart`:**
+
+```dart
+final _devCal = DeviceCalendarPlugin();
+
+Future<void> syncHearingToCalendar(Hearing h, String calendarId) async {
+  final event = Event(
+    calendarId,
+    eventId: h.takvimEventId, // varsa update, yoksa create
+    title: 'Duruşma — ${h.mahkemeAdi}',
+    description: 'Dosya: ${h.dosyaNo}\nTaraflar: ${h.taraflar}',
+    location: h.salon,
+    start: TZDateTime.from(h.durusmaTarihi, tz.getLocation('Europe/Istanbul')),
+    end: ...,
+    reminders: [
+      Reminder(minutes: 24 * 60),  // 1 gün önce
+      Reminder(minutes: 120),       // 2 saat önce
+    ],
+  );
+  final res = await _devCal.createOrUpdateEvent(event);
+  if (res?.isSuccess == true && h.takvimEventId == null) {
+    await hearingsDao.setEventId(h.id, res!.data!);
+  }
+}
+```
+
+**İzin kontrolü:** İlk kullanımda `_devCal.requestPermissions()`. Reddedilirse settings ekranında tekrar isteme akışı.
+
+**Tek yönlü sync:** Cihazdan event silinse bile uygulama veritabanı kaynak. Bir sonraki senkronda tekrar yazılır (kullanıcı bunu kapatabilmeli — ayar).
+
+### 12.7. Lokal Bildirimler
+
+**`lib/features/notifications/notification_service.dart`:**
+
+```dart
+final _notif = FlutterLocalNotificationsPlugin();
+
+Future<void> scheduleHearingReminders(Hearing h) async {
+  final tzTime = TZDateTime.from(
+    h.durusmaTarihi.subtract(const Duration(days: 1, hours: -20)),
+    tz.getLocation('Europe/Istanbul'),
+  );
+  await _notif.zonedSchedule(
+    h.id,
+    'Yarın duruşmanız var',
+    '${h.mahkemeAdi} — ${DateFormat.Hm().format(h.durusmaTarihi)}',
+    tzTime,
+    NotificationDetails(
+      android: AndroidNotificationDetails('hearings', 'Duruşmalar'),
+      iOS: DarwinNotificationDetails(),
+    ),
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+  );
+}
+```
+
+**Önemli:** Bildirimler **lokal schedule edildiği** için app kapalı/silinmiş bile değilse gelir. iOS arka plan kısıtı bunu etkilemez.
+
+### 12.8. Senkron Tetikleme Stratejisi
+
+**Tetikleyiciler:**
+- App açılışı (son senkrondan 6+ saat geçmişse otomatik)
+- Manuel "Senkronize et" butonu
+- Pull-to-refresh (liste ekranlarında)
+- Android'de `WorkManager` ile günlük opsiyonel arka plan denemesi (iOS'ta yok)
+
+**Kullanıcıya gösterim:**
+- Senkron sürerken: progress + "WebView'de e-Devlet'e giriş yap" yönlendirmesi
+- Bittiğinde: "32 dosya kontrol edildi · 3 yeni duruşma · 1 değişen tarih"
+- Hata: "UYAP'a ulaşılamadı, internet bağlantını kontrol et"
+
+### 12.9. Test Stratejisi
+
+**Unit testler (`test/`):**
+- Parser: 5-10 örnek XML için fixture testleri
+- Tarih parse: tüm format varyantları
+- Idempotent merge: aynı input iki kez → 0 değişiklik
+
+**Widget testler:**
+- Onboarding akışı
+- Liste/detay ekranları
+
+**Integration testler (`integration_test/`):**
+- Tam senkron akışı (mocked WebView ile)
+- Takvim yazma (gerçek cihazda)
+
+**Manuel test:**
+- 5-10 gerçek avukat ile beta — farklı UYAP hesap konfigürasyonları (m-imza vs e-Devlet, az/çok dosyalı, çoklu mahkeme)
+
+### 12.10. Reverse Engineering İş Akışı (Kritik)
+
+UYAP şemasını çıkarmak projenin en kritik adımı. Sıralama:
+
+1. **Bir avukat dostundan** (veya kendi hesabınla) UYAP Avukat Portal'a Chrome DevTools açık şekilde gir
+2. **Network sekmesi**ni kaydet, "Dosyalarım", "Duruşma takvimi", "XML export" gibi sayfaları gez
+3. Her endpoint için:
+   - Request: URL, method, headers, body
+   - Response: format (XML/HTML/JSON), schema
+4. **Anonim örnek dosyalar topla** (3-5 farklı avukat) — taraf isimlerini fixture'larda anonimleştir
+5. `docs/uyap_parse_schema.md` içinde her endpoint'i + örneği dokümante et
+6. Parser'ı bu örneklerle TDD yaklaşımıyla yaz
+
+**Bu adımı atlama** — şema bilgisi olmadan yazılan parser bir hafta çöpe gider.
+
+### 12.11. Yayın Hazırlığı
+
+**iOS — App Store:**
+- Apple Developer hesabı ($99/yıl)
+- App Store Connect'te uygulama oluştur
+- Privacy nutrition labels: "Veri toplanmıyor (cihaz tarafı)"
+- Review notları: "Kullanıcı kendi e-Devlet/UYAP hesabıyla giriş yapar, veri kullanıcının cihazında kalır, sunucumuza iletilmez"
+- TestFlight ile beta dağıt
+
+**Android — Google Play:**
+- Google Play Developer hesabı ($25 tek seferlik)
+- Data safety formu: hiçbir veri toplanmıyor
+- Internal testing → Closed beta → Production
+
+**Sürüm yönetimi:** `pubspec.yaml` `version: 1.0.0+1` formatında. Semver.
+
+---
+
+## 13. MVP Sonrası (Faz 2+)
 
 - **Sunucu tarafı push** — iOS arka plan kısıtını aşmak için minimum sunucu, sadece push tetikleme
 - **Çoklu cihaz sync** — bürodaki avukatların ortak takvimi
@@ -332,12 +773,12 @@ law/
 
 ---
 
-## 13. Lisans ve Katkı
+## 14. Lisans ve Katkı
 
 İç proje. Lisans modeli ürün stratejisine göre yayın öncesi netleşecek.
 
 ---
 
-## 14. İletişim
+## 15. İletişim
 
 Repo: https://github.com/oguzhnsglm/law
