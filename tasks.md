@@ -59,13 +59,17 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **Önemli:** Avukat son onayı şart. Bu draft'tır, "İLERİDE BİLİŞİM HUKUKÇUSU TARAFINDAN İNCELENMESİ ZORUNLUDUR" notunu her dosyaya ekle.
 
-### G2. Store Metadata (`docs/marketing/`)
+**G1 Tamamlanma Notu (2026-05-06):** 5 dosya da yazıldı, "bilişim hukukçusu incelemesi zorunludur" uyarısı her dosyanın başında. **Eksikler (placeholder olarak bırakıldı, kullanıcı dolduracak):** limited şirket unvanı, MERSİS no, adres, KEP, iletişim e-posta, VERBİS sicil no, UYAP Avukat Web Servisleri başvuru numarası, yetkili mahkeme şehri (İstanbul/Ankara), domain adı (`https://[DOMAIN]`). Bu placeholder'lar tüm dosyalarda köşeli parantez içinde işaretli — yayın öncesi tek seferde global bul-değiştir ile doldurulabilir.
+
+### G2. Store Metadata (`docs/marketing/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 0.5 gün. **Çıktı:**
 
 - `docs/marketing/app_store_listing.md` — Apple App Store için: app adı (≤30 karakter), subtitle (≤30), promotional text (≤170), description (≤4000), keywords (≤100), TR + EN
 - `docs/marketing/play_store_listing.md` — Google Play için: short description (≤80), full description (≤4000), TR + EN
 - `docs/marketing/screenshot_brief.md` — 5 zorunlu screenshot için brief (hangi ekran, ne anlatıyor, hangi metin overlay)
 - `docs/marketing/icon_brief.md` — Uygulama ikonu için brief (semboller: terazi/duruşma çekici, renk paleti, kaçınılacak şeyler)
+
+**G2 Tamamlanma Notu (2026-05-06):** 4 dosya yazıldı (App Store + Play Store TR/EN listings, screenshot brief 5 ekran için, icon brief). **Eksikler / sonraki adımda kullanıcıdan beklenen:** (1) destek e-postası ve domain — placeholder `[destek@DOMAIN]` / `https://[DOMAIN]/...`; (2) **görsel üretim henüz yok** — bu görev sadece brief'tir, gerçek screenshot ve ikon dosyalarını tasarımcı Figma'da üretecek; (3) App Preview Video opsiyonel ve v1.1'e ertelendi. Brief'ler tasarımcının "production-ready" üretimi için yeterli detayda.
 
 ### G3. Design System ve Wireframe'ler (`docs/design/`)
 **Süre:** 1 gün. **Çıktı:**
@@ -123,8 +127,8 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 | ID | Görev | Tahmini Süre | Durum |
 |---|---|---|---|
-| G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** |
-| G2 | Store Metadata | 0.5 gün | bekliyor |
+| G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** — kuruluş bilgileri placeholder; bilişim hukukçusu onayı bekliyor |
+| G2 | Store Metadata | 0.5 gün | **(YAPILDI — 2026-05-06)** — brief tamam; gerçek görseller (screenshot/ikon) tasarımcıya bırakıldı |
 | G3 | Design System + Wireframe | 1 gün | bekliyor |
 | G4 | Lokalizasyon ARB | 0.5 gün | bekliyor |
 | G5 | Rakip Analizi + UYAP akış | 0.5 gün | bekliyor |
