@@ -38,7 +38,7 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | U.2b | Android Studio + SDK 34 | **(BEKLİYOR — kullanıcı manuel kuracak, winget UAC başarısız)** |
 | U.2c | `flutter doctor --android-licenses` | **(BEKLİYOR — Android Studio sonrası)** |
 | U.3 | Git user config + GitHub auth + ilk push | **(BEKLİYOR — kullanıcı tarafı)** |
-| 1.1 | `flutter create` ve klasör iskeleti | bekliyor (U.1'e bağlı) |
+| 1.1 | `flutter create` ve klasör iskeleti | **(YAPILDI — 2026-05-06, scaffold + Android/iOS native dirs)** |
 | 1.2 | `pubspec.yaml` paket ekleme | bekliyor |
 | 1.3 | Drift + SQLCipher şema | bekliyor |
 | 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (örnek fixture'a bağlı) |
