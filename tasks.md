@@ -48,7 +48,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 ## Görevler
 
-### G1. Hukuki Metinler Paketi (`docs/legal/`)
+### G1. Hukuki Metinler Paketi (`docs/legal/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 1 gün. **Çıktı:**
 
 - `docs/legal/kvkk_aydinlatma.md` — KVKK Aydınlatma Metni (Türkçe). Veri sorumlusu, işlenen veri kategorileri, işleme amacı, hukuki sebep, saklama süresi, veri sahibi hakları, başvuru yolu. **Bu projede sunucu yok**, bu vurgulanmalı: kullanıcı verisi cihazda kalır.
@@ -123,7 +123,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 | ID | Görev | Tahmini Süre | Durum |
 |---|---|---|---|
-| G1 | Hukuki Metinler Paketi | 1 gün | bekliyor |
+| G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** |
 | G2 | Store Metadata | 0.5 gün | bekliyor |
 | G3 | Design System + Wireframe | 1 gün | bekliyor |
 | G4 | Lokalizasyon ARB | 0.5 gün | bekliyor |
