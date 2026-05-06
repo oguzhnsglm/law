@@ -71,7 +71,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **G2 Tamamlanma Notu (2026-05-06):** 4 dosya yazıldı (App Store + Play Store TR/EN listings, screenshot brief 5 ekran için, icon brief). **Eksikler / sonraki adımda kullanıcıdan beklenen:** (1) destek e-postası ve domain — placeholder `[destek@DOMAIN]` / `https://[DOMAIN]/...`; (2) **görsel üretim henüz yok** — bu görev sadece brief'tir, gerçek screenshot ve ikon dosyalarını tasarımcı Figma'da üretecek; (3) App Preview Video opsiyonel ve v1.1'e ertelendi. Brief'ler tasarımcının "production-ready" üretimi için yeterli detayda.
 
-### G3. Design System ve Wireframe'ler (`docs/design/`)
+### G3. Design System ve Wireframe'ler (`docs/design/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 1 gün. **Çıktı:**
 
 - `docs/design/design_system.md` — Material 3 tabanlı: renk paleti (light + dark), tipografi ölçeği, spacing scale (4/8/12/16/24/32), elevation, border radius standartları
@@ -84,6 +84,8 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
   - Senkron ekranı (WebView)
   - Ayarlar
 - `docs/design/component_inventory.md` — Tekrar kullanılacak widget envanteri (HearingCard, CaseListTile, SyncStatusBanner, EmptyState, vb.)
+
+**G3 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı. Design system M3 token'larıyla light + dark renk paleti, Inter tipografi ölçeği, 8'lik spacing, elevation, radius, ikonografi, motion ve erişilebilirlik kurallarını kapsıyor. Wireframes 7 ana ekran + modal pattern + tablet adaptasyonu içeriyor (ASCII tabanlı, Figma'ya çevrilecek). Component inventory 5 katmanlı (atom/molekül/organizm/şablon/yardımcı) ~25 widget tanımı + bağımlılık haritası. **Eksikler:** (1) gerçek Figma yüksek çözünürlüklü mockup'lar tasarımcıya bırakıldı; (2) tablet detay master-detail layout sadece özet düzeyinde — gerçek pikselli mockup yok; (3) `error_catalog.md` G7 görevinde ayrıca yapılacak (wireframe'lerde sadece referans verildi).
 
 ### G4. Lokalizasyon Hazırlığı (`assets/i18n/`)
 **Süre:** 0.5 gün. **Çıktı:**
@@ -129,7 +131,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 |---|---|---|---|
 | G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** — kuruluş bilgileri placeholder; bilişim hukukçusu onayı bekliyor |
 | G2 | Store Metadata | 0.5 gün | **(YAPILDI — 2026-05-06)** — brief tamam; gerçek görseller (screenshot/ikon) tasarımcıya bırakıldı |
-| G3 | Design System + Wireframe | 1 gün | bekliyor |
+| G3 | Design System + Wireframe | 1 gün | **(YAPILDI — 2026-05-06)** — text-only; Figma mockup tasarımcıya |
 | G4 | Lokalizasyon ARB | 0.5 gün | bekliyor |
 | G5 | Rakip Analizi + UYAP akış | 0.5 gün | bekliyor |
 | G6 | Persona + User Journey | 0.5 gün | bekliyor |
