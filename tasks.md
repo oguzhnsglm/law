@@ -98,11 +98,13 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **G4 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı: `tr.arb` (kaynak), `en.arb` (App Store EN için), `README.md` (translator brief + workflow). ~158 anahtar — hedef aralıkta. ICU MessageFormat (plural, placeholder) örnekleriyle. **Eksikler:** (1) `l10n.yaml` ve `pubspec.yaml` `flutter_localizations` entegrasyonu ana ajan görevidir (Faz 3); (2) error_catalog (G7) sonrasında error_* anahtarları tekrar gözden geçirilip senkronlanacak; (3) gerçek profesyonel çeviri review'ı yayın öncesi yapılmalı (özellikle EN, App Store onayı için).
 
-### G5. Rakip Analizi (`docs/research/`)
+### G5. Rakip Analizi (`docs/research/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 0.5 gün. **Çıktı:**
 
 - `docs/research/competitor_analysis.md` — UyumSoft, Hukuk360, Adli Takip, Kazancı Net, OnlineHukuk.net analizi: özellik matrisi, fiyat, mobil uygulama var mı, eksikleri ne, biz nasıl ayrışıyoruz
 - `docs/research/uyap_endpoints_public_knowledge.md` — KAMU bilgisi seviyesinde UYAP Avukat Portal akışı (login → menü → dosyalar → XML export). **Hiçbir bypass/scraping rehberi YAZMA**, sadece kullanıcının manuel akışını dokümante et.
+
+**G5 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. Rakip analizi 6 oyuncu için özellik matrisi + müşteri şikayet dinamikleri + konumlandırma mottosu + SWOT içeriyor. UYAP doc kamu bilgisi sınırına sıkı bağlı kaldı — kapsam sınırı en üstte vurgulu, hiçbir bypass/automation rehberi yok, sadece "kullanıcının kendi tarayıcısında ne görüyor" dokümantasyonu. **Eksikler:** (1) Fiyat/özellik bilgileri 2026-05-06 snapshot'ı; pazarlama ekibi yayın öncesi refresh etmeli; (2) müşteri şikayet yüzdeleri tahmini, App Store/Play yorumları manuel sayım yapılmadı.
 
 ### G6. Avukat Persona ve User Journey (`docs/research/`)
 **Süre:** 0.5 gün. **Çıktı:**
@@ -135,7 +137,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 | G2 | Store Metadata | 0.5 gün | **(YAPILDI — 2026-05-06)** — brief tamam; gerçek görseller (screenshot/ikon) tasarımcıya bırakıldı |
 | G3 | Design System + Wireframe | 1 gün | **(YAPILDI — 2026-05-06)** — text-only; Figma mockup tasarımcıya |
 | G4 | Lokalizasyon ARB | 0.5 gün | **(YAPILDI — 2026-05-06)** — ~158 anahtar; pubspec/l10n.yaml entegrasyonu ana ajana |
-| G5 | Rakip Analizi + UYAP akış | 0.5 gün | bekliyor |
+| G5 | Rakip Analizi + UYAP akış | 0.5 gün | **(YAPILDI — 2026-05-06)** — fiyat/özellik snapshot 2026-05; refresh önerilir |
 | G6 | Persona + User Journey | 0.5 gün | bekliyor |
 | G7 | Hata Mesajı Kataloğu | 0.5 gün | bekliyor |
 
