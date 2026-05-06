@@ -33,9 +33,11 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | 0.2 | README ve proje planı | **(YAPILDI — 2026-05-06)** |
 | 0.3 | CLAUDE.md + kural dosyaları (`project`, `workflow`, `loop`, `models`, `user-setup`) | **(YAPILDI — 2026-05-06)** |
 | 0.4 | İlk push to origin | **(BEKLİYOR — kullanıcı `git push` yapacak)** |
-| U.1 | Flutter SDK kurulumu | **(BEKLİYOR — kullanıcı tarafı, [user-setup.md](.claude/rules/user-setup.md))** |
-| U.2 | Android Studio + JDK 17 | **(BEKLİYOR — kullanıcı tarafı)** |
-| U.3 | Git user config + GitHub auth | **(BEKLİYOR — kullanıcı tarafı)** |
+| U.1 | Flutter SDK kurulumu | **(YAPILDI — 2026-05-06, `C:\Users\ugras\flutter` 3.41.9)** |
+| U.2a | JDK 17 kurulumu | **(YAPILDI — 2026-05-06, Microsoft OpenJDK winget)** |
+| U.2b | Android Studio + SDK 34 | **(BEKLİYOR — kullanıcı manuel kuracak, winget UAC başarısız)** |
+| U.2c | `flutter doctor --android-licenses` | **(BEKLİYOR — Android Studio sonrası)** |
+| U.3 | Git user config + GitHub auth + ilk push | **(BEKLİYOR — kullanıcı tarafı)** |
 | 1.1 | `flutter create` ve klasör iskeleti | bekliyor (U.1'e bağlı) |
 | 1.2 | `pubspec.yaml` paket ekleme | bekliyor |
 | 1.3 | Drift + SQLCipher şema | bekliyor |

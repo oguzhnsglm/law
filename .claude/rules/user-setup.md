@@ -4,13 +4,17 @@ Bu görevler sadece kullanıcı (insan) tarafından yapılabilir; loop bunları 
 
 ## Hemen Şimdi (Faz 1'e başlamadan önce)
 
-- [ ] **Flutter SDK kurulumu (3.24+)** — https://docs.flutter.dev/get-started/install/windows
-  - Kurulumdan sonra `flutter doctor` çalıştır, çıktıyı paylaş.
-- [ ] **Android Studio + Android SDK 34** — emulator + SDK için
-- [ ] **JDK 17** — Android build için
-- [ ] **VS Code + Flutter/Dart eklentisi** (tercih)
-- [ ] **Git config (kullanıcı adı + email)** — `git config --global user.name "..."` ve `user.email "..."`
-- [ ] **GitHub remote auth** — repo'ya push edebilmek için (PAT veya gh auth login)
+- [x] **Flutter SDK 3.41.9** — `C:\Users\ugras\flutter`, PATH'e eklendi **(YAPILDI — 2026-05-06, asistan kurdu)**
+- [x] **JDK 17 (Microsoft OpenJDK)** — winget ile kuruldu **(YAPILDI — 2026-05-06, asistan kurdu)**
+  - JAVA_HOME ayarı kullanıcı yapacak (yeni terminalde PATH yenilenince)
+- [ ] **Android Studio + Android SDK 34** — winget kurulumu başlatıldı (`busw4wn2t`), kullanıcı UAC onayı verecek; alternatif: kullanıcı kendi kurar
+- [ ] **Android SDK Manager içinden**: API 34 Platform + Build-Tools + Emulator + Platform-Tools
+- [ ] **`flutter doctor --android-licenses`** — tüm lisansları kabul et
+- [ ] **`flutter doctor -v`** — tüm satırlar ✅ olmalı (Flutter, Android toolchain)
+- [ ] **VS Code + Flutter eklentisi** (tercih)
+- [ ] **Git config (kullanıcı adı + email)** — `git config --global user.name/user.email`
+- [ ] **GitHub remote auth** — `gh auth login` veya PAT
+- [ ] **İlk push** — `git push -u origin main`
 
 ## iOS Build İçin (sadece Mac sahibiyseniz)
 
