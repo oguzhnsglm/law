@@ -41,7 +41,7 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | U.3 | Git user config + GitHub auth + ilk push | **(BEKLİYOR — kullanıcı tarafı)** |
 | 1.1 | `flutter create` ve klasör iskeleti | **(YAPILDI — 2026-05-06, scaffold + Android/iOS native dirs)** |
 | 1.2 | `pubspec.yaml` paket ekleme | **(YAPILDI — 2026-05-06, 159 paket çözüldü, analyze temiz)** |
-| 1.3 | Drift + SQLCipher şema | bekliyor |
+| 1.3 | Drift + SQLCipher şema | **(YAPILDI — 2026-05-06, 4 tablo, 4 DAO, secure key, 10 test geçti)** |
 | 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (örnek fixture'a bağlı) |
 | 1.5 | Tarih parse util + testleri | bekliyor |
 | 2.1 | WebView entegrasyonu (`flutter_inappwebview`) | bekliyor |
