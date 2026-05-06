@@ -106,11 +106,13 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 
 **G5 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. Rakip analizi 6 oyuncu için özellik matrisi + müşteri şikayet dinamikleri + konumlandırma mottosu + SWOT içeriyor. UYAP doc kamu bilgisi sınırına sıkı bağlı kaldı — kapsam sınırı en üstte vurgulu, hiçbir bypass/automation rehberi yok, sadece "kullanıcının kendi tarayıcısında ne görüyor" dokümantasyonu. **Eksikler:** (1) Fiyat/özellik bilgileri 2026-05-06 snapshot'ı; pazarlama ekibi yayın öncesi refresh etmeli; (2) müşteri şikayet yüzdeleri tahmini, App Store/Play yorumları manuel sayım yapılmadı.
 
-### G6. Avukat Persona ve User Journey (`docs/research/`)
+### G6. Avukat Persona ve User Journey (`docs/research/`) **(YAPILDI — 2026-05-06)**
 **Süre:** 0.5 gün. **Çıktı:**
 
 - `docs/research/personas.md` — 3 persona: solo avukat, küçük büro ortağı, stajyer/sekreter (sekreter avukat hesabı kullanan)
 - `docs/research/user_journeys.md` — Her persona için tipik bir gün senaryosu, ağrı noktaları, uygulamanın hangi anlarda devreye gireceği
+
+**G6 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. 3 persona (P1 solo Mert, P2 büro ortağı Ayşegül, P3 stajyer Kerem) — her biri için bağlam, ekipman, hedefler, ağrı noktaları, tasarım sonuçları. Personalar **kurmaca** olarak işaretlendi (gerçek kişi değil). User journey 3 persona için saatlik akış + 3 cross-persona akış (onboarding, senkron kırılması, KVKK silme) içeriyor. **Eksikler:** (1) gerçek kullanıcı görüşmesi yapılmadı; persona detayları sektör gözlemine dayalı, beta testle valide edilmeli; (2) Faz 2 paylaşım modeli J3'te taslak — kesin tasarım Faz 2 başlamadan revize edilecek.
 
 ### G7. Hata Mesajı Kataloğu (`docs/design/`)
 **Süre:** 0.5 gün. **Çıktı:**
@@ -138,7 +140,7 @@ Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #
 | G3 | Design System + Wireframe | 1 gün | **(YAPILDI — 2026-05-06)** — text-only; Figma mockup tasarımcıya |
 | G4 | Lokalizasyon ARB | 0.5 gün | **(YAPILDI — 2026-05-06)** — ~158 anahtar; pubspec/l10n.yaml entegrasyonu ana ajana |
 | G5 | Rakip Analizi + UYAP akış | 0.5 gün | **(YAPILDI — 2026-05-06)** — fiyat/özellik snapshot 2026-05; refresh önerilir |
-| G6 | Persona + User Journey | 0.5 gün | bekliyor |
+| G6 | Persona + User Journey | 0.5 gün | **(YAPILDI — 2026-05-06)** — kurmaca personalar; beta sonrası valide edilecek |
 | G7 | Hata Mesajı Kataloğu | 0.5 gün | bekliyor |
 
 **Toplam: ~4.5 gün.**
