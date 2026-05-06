@@ -36,10 +36,11 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | U.1 | Flutter SDK kurulumu | **(YAPILDI — 2026-05-06, `C:\Users\ugras\flutter` 3.41.9)** |
 | U.2a | JDK 17 kurulumu | **(YAPILDI — 2026-05-06, Microsoft OpenJDK winget)** |
 | U.2b | Android Studio + SDK 34 | **(BEKLİYOR — kullanıcı manuel kuracak, winget UAC başarısız)** |
-| U.2c | `flutter doctor --android-licenses` | **(BEKLİYOR — Android Studio sonrası)** |
+| U.2b | Android Studio + SDK 34 | **(YAPILDI — 2026-05-06, kullanıcı manuel kurdu)** |
+| U.2c | `flutter doctor --android-licenses` | **(YAPILDI — 2026-05-06, tüm lisanslar kabul)** |
 | U.3 | Git user config + GitHub auth + ilk push | **(BEKLİYOR — kullanıcı tarafı)** |
 | 1.1 | `flutter create` ve klasör iskeleti | **(YAPILDI — 2026-05-06, scaffold + Android/iOS native dirs)** |
-| 1.2 | `pubspec.yaml` paket ekleme | bekliyor |
+| 1.2 | `pubspec.yaml` paket ekleme | **(YAPILDI — 2026-05-06, 159 paket çözüldü, analyze temiz)** |
 | 1.3 | Drift + SQLCipher şema | bekliyor |
 | 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (örnek fixture'a bağlı) |
 | 1.5 | Tarih parse util + testleri | bekliyor |
