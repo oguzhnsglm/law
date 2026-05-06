@@ -35,8 +35,7 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | 0.4 | İlk push to origin | **(BEKLİYOR — kullanıcı `git push` yapacak)** |
 | U.1 | Flutter SDK kurulumu | **(YAPILDI — 2026-05-06, `C:\Users\ugras\flutter` 3.41.9)** |
 | U.2a | JDK 17 kurulumu | **(YAPILDI — 2026-05-06, Microsoft OpenJDK winget)** |
-| U.2b | Android Studio + SDK 34 | **(BEKLİYOR — kullanıcı manuel kuracak, winget UAC başarısız)** |
-| U.2b | Android Studio + SDK 34 | **(YAPILDI — 2026-05-06, kullanıcı manuel kurdu)** |
+| U.2b | Android Studio + SDK 34 + cmdline-tools | **(YAPILDI — 2026-05-06, kullanıcı manuel kurdu)** |
 | U.2c | `flutter doctor --android-licenses` | **(YAPILDI — 2026-05-06, tüm lisanslar kabul)** |
 | U.3 | Git user config + GitHub auth + ilk push | **(BEKLİYOR — kullanıcı tarafı)** |
 | 1.1 | `flutter create` ve klasör iskeleti | **(YAPILDI — 2026-05-06, scaffold + Android/iOS native dirs)** |
