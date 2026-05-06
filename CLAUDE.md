@@ -53,6 +53,10 @@ Detay: [README.md §8 yol haritası](README.md).
 
 Her iş tamamlandığında bu tablo güncellenir (`(YAPILDI — tarih)` ya da kısmen-not). `.gitignore` da yeni paket/build çıktısı geldikçe güncellenir. İkisi de commit'in parçası, ayrı commit YOK.
 
+## Paralel Ajan Çalışması
+
+İkinci bir AI ajanı [tasks.md](tasks.md) dosyasındaki görevleri yürütüyor (dokümantasyon, hukuki metinler, tasarım, lokalizasyon, araştırma). **İkinci ajan SADECE** `docs/`, `assets/i18n/`, `LICENSE` dosyalarına dokunabilir. Ana ajan (bu Claude) `lib/`, `android/`, `ios/`, `pubspec.yaml`, README, CLAUDE.md, `.claude/rules/` üzerinde çalışır. Çakışma olmaması için bölgeler ayrı; ikisi de paralel push edebilir.
+
 ## `/loop` Davranışı (Özet)
 
 `/loop` otonom modunda çağrıldığında: README'deki yol haritasından **bir sonraki yapılmamış adımı** bul, uygula, `(YAPILDI)` ile işaretle, commit at, dur (loop kendisi tetikler tekrar). Detay: [`.claude/rules/loop.md`](.claude/rules/loop.md).
