@@ -1,40 +1,56 @@
-# tasks.md — Paralel Ajan Görev Listesi
+# tasks.md — Paralel Ajan Görev Listesi (v2)
 
-Bu dosya **ikinci AI ajanı** içindir. Ana ajan (Claude Opus 4.7) Flutter scaffold, UYAP entegrasyonu, parser, DB ve WebView gibi **kod tarafını** yürütüyor. İkinci ajan **dokümantasyon, hukuki metinler, tasarım, lokalizasyon ve araştırma** çalışmalarını yapacak.
+Bu dosya **ikinci AI ajanı** içindir. Ana ajan (Claude Opus 4.7) Flutter scaffold, UYAP entegrasyonu, parser, DB ve WebView gibi **kod tarafını** yürütüyor. İkinci ajan **dokümantasyon, test fixture'ları, hukuki/UX metinleri ve operasyonel içerik** üretecek.
 
 İlk önce [README.md](README.md) ve [CLAUDE.md](CLAUDE.md) dosyalarını oku — proje bağlamı orada.
 
+> **Versiyon notu (2026-05-06):** v1'deki G1-G7 görevleri tamamlandı (commit `90dd9ce`'e kadar). Bu dosya v2'dir; yeni görev seti G8-G13. Eski tamamlanan görevler `docs/` altında zaten yazılı, dokunma.
+
 ---
+
+## İkinci PC Ortam Kısıtı (KRİTİK)
+
+İkinci ajan **Flutter SDK, Android Studio veya Dart araçlarına sahip DEĞİL**. Bu nedenle:
+
+- **YASAK:** `flutter`, `dart`, `pub`, `build_runner` komutu çalıştırmak — komutlar yok zaten
+- **YASAK:** `.dart` dosyası yazmak veya değiştirmek — derlenip test edilemez, sessiz hata bırakır
+- **YASAK:** Şu uzantıları yazmak: `.dart`, `.lock`, `.gradle`, `.kts`, `.swift`, `.kt`, `.h`, `.m`, `.plist` (manuel düzenleme riskli)
+- **İZİN:** `.md`, `.xml`, `.html`, `.svg`, `.png`, `.jpg`, `.json`, `.arb`, `.txt`, `.yml` (sadece veri/içerik)
 
 ## Çakışma Kuralı (KRİTİK)
 
 İkinci ajan **YALNIZCA** aşağıdaki dosya/klasörleri oluşturabilir veya değiştirebilir:
 
 ```
-docs/legal/**
-docs/design/**
-docs/research/**
-docs/marketing/**
-assets/i18n/**
+docs/legal/**            (mevcut — sadece refinement)
+docs/design/**           (mevcut — sadece refinement)
+docs/research/**         (mevcut + yeni alt klasör: uyap_schema/)
+docs/marketing/**        (mevcut)
+docs/help/**             (YENİ klasör)
+docs/operations/**       (YENİ klasör)
+assets/i18n/**           (mevcut — refinement, yeni anahtarlar)
+assets/icons/**          (YENİ klasör — SVG/PNG kaynak draft'ları)
+test/fixtures/uyap/**    (YENİ klasör — sadece .xml/.html/.json fixture'lar; .dart YASAK)
 LICENSE
 ```
 
 **ASLA dokunma:**
 
-- `lib/`, `android/`, `ios/`, `web/`, `windows/`, `linux/`, `macos/` (Flutter scaffold)
-- `pubspec.yaml`, `pubspec.lock`, `analysis_options.yaml`
-- `test/`, `integration_test/`
+- `lib/`, `android/`, `ios/`, `web/`, `windows/`, `linux/`, `macos/`
+- `pubspec.yaml`, `pubspec.lock`, `analysis_options.yaml`, `l10n.yaml`
+- `test/**` (sadece `test/fixtures/uyap/**` izinli — başka yerde dosya YOK)
+- `integration_test/`
 - `README.md`, `CLAUDE.md`, `.claude/rules/**`, `.gitignore`
-- Kök dizindeki diğer her şey (Ana ajanın bölgesi)
+- Kök dizindeki diğer her şey
 
-Bu kural ihlal edilirse merge conflict oluşur. Şüphede ol → dokunma.
+Bu kural ihlal edilirse merge conflict oluşur veya derleme bozulur. Şüphede ol → dokunma, sor.
 
 ## Workflow
 
-1. Yeni bir branch aç: `git checkout -b parallel/docs-<görev-adı>`
+1. Yeni bir branch aç: `git checkout -b parallel/<görev-id>` (örn. `parallel/G8-uyap-schema`)
 2. Görevi yap, dosyaları **sadece izinli zonlarda** oluştur.
 3. Commit'i [`.claude/rules/workflow.md`](.claude/rules/workflow.md) formatında at.
-4. Push: `git push -u origin parallel/docs-<görev-adı>`
+4. Push: `git push -u origin parallel/<görev-id>`
 5. PR aç (GitHub üzerinden), açıklamada hangi göreve karşılık geldiğini belirt.
 6. Ana ajan veya kullanıcı PR'ı incelesin → merge.
 
@@ -42,127 +58,208 @@ Branch'ler kısa ömürlü olsun, görev başına ayrı PR.
 
 ## İlerleme İşaretleme
 
-Görev tamamlandığında bu dosyada satıra `**(YAPILDI — YYYY-MM-DD — PR #X)**` etiketi ekle.
+Görev tamamlandığında bu dosyada ilgili başlığa `**(YAPILDI — YYYY-MM-DD — PR #X)**` etiketi ekle. Ek olarak her görev altına 3-5 satırlık tamamlanma notu yaz: ne üretildi, neyin eksik bırakıldığı, ana ajan/insan tarafından ne beklenir.
 
 ---
 
-## Görevler
+## Görevler (G8 — G13)
 
-### G1. Hukuki Metinler Paketi (`docs/legal/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 1 gün. **Çıktı:**
+### G8. UYAP Veri Şeması Detaylı Dokümantasyonu
 
-- `docs/legal/kvkk_aydinlatma.md` — KVKK Aydınlatma Metni (Türkçe). Veri sorumlusu, işlenen veri kategorileri, işleme amacı, hukuki sebep, saklama süresi, veri sahibi hakları, başvuru yolu. **Bu projede sunucu yok**, bu vurgulanmalı: kullanıcı verisi cihazda kalır.
-- `docs/legal/privacy_policy_tr.md` — Gizlilik Politikası (Türkçe), kullanıcıya yönelik dilde
-- `docs/legal/privacy_policy_en.md` — İngilizce versiyon (App Store için)
-- `docs/legal/terms_of_service_tr.md` — Kullanım Şartları (Türkçe)
-- `docs/legal/uyap_edevlet_disclaimer.md` — UYAP/e-Devlet ile ilişkimizin net açıklaması: "Resmi temsilci değiliz, kullanıcı kendi oturumunu kendi cihazında açar, biz sadece görüntü aracıyız"
+**Çıktı klasörü:** `docs/research/uyap_schema/`
+**Süre:** 1 gün
 
-**Önemli:** Avukat son onayı şart. Bu draft'tır, "İLERİDE BİLİŞİM HUKUKÇUSU TARAFINDAN İNCELENMESİ ZORUNLUDUR" notunu her dosyaya ekle.
+UYAP Avukat Portal'dan indirilebilen XML export'unun ve dosya/duruşma sayfalarındaki HTML yapısının **kamu bilgisi seviyesinde** (avukatların kamu forumlarında, hukuk yazılım blog'larında, üçüncü parti entegrasyon dokümanlarında paylaştığı) ayrıntılı şema dokümantasyonu.
 
-**G1 Tamamlanma Notu (2026-05-06):** 5 dosya da yazıldı, "bilişim hukukçusu incelemesi zorunludur" uyarısı her dosyanın başında. **Eksikler (placeholder olarak bırakıldı, kullanıcı dolduracak):** limited şirket unvanı, MERSİS no, adres, KEP, iletişim e-posta, VERBİS sicil no, UYAP Avukat Web Servisleri başvuru numarası, yetkili mahkeme şehri (İstanbul/Ankara), domain adı (`https://[DOMAIN]`). Bu placeholder'lar tüm dosyalarda köşeli parantez içinde işaretli — yayın öncesi tek seferde global bul-değiştir ile doldurulabilir.
+**Üretilecek dosyalar:**
 
-### G2. Store Metadata (`docs/marketing/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 0.5 gün. **Çıktı:**
+- `docs/research/uyap_schema/xml_export_schema.md` — XML kök elementi, alt elementler, her field için: ad, tip (string/date/int), zorunlu/opsiyonel, örnek değer, format (özellikle tarih formatları: `dd.MM.yyyy`, `dd.MM.yyyy HH:mm`, vb.)
+- `docs/research/uyap_schema/html_pages_structure.md` — Avukat Portal'daki ana sayfaların DOM yapısı: dosya listesi tablosu (hangi `<table>`, hangi `<td>` sırası), dosya detay sayfası, duruşma takvimi sayfası
+- `docs/research/uyap_schema/field_glossary.md` — UYAP terminolojisi sözlüğü: "Esas No", "Karar No", "Safahat", "Tebligat", "Müzekkere" vb. — her terim için kısa Türkçe + İngilizce açıklama, hangi alanda bulunur
 
-- `docs/marketing/app_store_listing.md` — Apple App Store için: app adı (≤30 karakter), subtitle (≤30), promotional text (≤170), description (≤4000), keywords (≤100), TR + EN
-- `docs/marketing/play_store_listing.md` — Google Play için: short description (≤80), full description (≤4000), TR + EN
-- `docs/marketing/screenshot_brief.md` — 5 zorunlu screenshot için brief (hangi ekran, ne anlatıyor, hangi metin overlay)
-- `docs/marketing/icon_brief.md` — Uygulama ikonu için brief (semboller: terazi/duruşma çekici, renk paleti, kaçınılacak şeyler)
+**Kurallar:**
+- Sadece kamu bilgisi. Bypass, scraping, automation script'i içermez.
+- Her sayfa/şema için ASCII örneği ver (anonim).
+- "Tahmin" olan kısımları açıkça `(tahmin — fixture geldiğinde doğrulanacak)` ile işaretle.
+- Eski G5'teki `uyap_endpoints_public_knowledge.md` ile çakışma yok; bu daha derin teknik şema.
 
-**G2 Tamamlanma Notu (2026-05-06):** 4 dosya yazıldı (App Store + Play Store TR/EN listings, screenshot brief 5 ekran için, icon brief). **Eksikler / sonraki adımda kullanıcıdan beklenen:** (1) destek e-postası ve domain — placeholder `[destek@DOMAIN]` / `https://[DOMAIN]/...`; (2) **görsel üretim henüz yok** — bu görev sadece brief'tir, gerçek screenshot ve ikon dosyalarını tasarımcı Figma'da üretecek; (3) App Preview Video opsiyonel ve v1.1'e ertelendi. Brief'ler tasarımcının "production-ready" üretimi için yeterli detayda.
+**Neden önemli:** Ana ajanın UYAP XML/HTML parser'ı (`lib/core/parse/`) yazarken referans olacak. Şema bilgisi olmadan parser yazılamaz.
 
-### G3. Design System ve Wireframe'ler (`docs/design/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 1 gün. **Çıktı:**
+---
 
-- `docs/design/design_system.md` — Material 3 tabanlı: renk paleti (light + dark), tipografi ölçeği, spacing scale (4/8/12/16/24/32), elevation, border radius standartları
-- `docs/design/wireframes.md` — Metin tabanlı wireframe'ler şu ekranlar için:
-  - Onboarding (3 sayfa: hoş geldin, KVKK rıza, izinler)
-  - Ana ekran (alt sekmeler: Bugün / Takvim / Dosyalar / Ayarlar)
-  - Dosya listesi
-  - Dosya detay
-  - Duruşma detay
-  - Senkron ekranı (WebView)
-  - Ayarlar
-- `docs/design/component_inventory.md` — Tekrar kullanılacak widget envanteri (HearingCard, CaseListTile, SyncStatusBanner, EmptyState, vb.)
+### G9. Synthetic UYAP Test Fixture'ları
 
-**G3 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı. Design system M3 token'larıyla light + dark renk paleti, Inter tipografi ölçeği, 8'lik spacing, elevation, radius, ikonografi, motion ve erişilebilirlik kurallarını kapsıyor. Wireframes 7 ana ekran + modal pattern + tablet adaptasyonu içeriyor (ASCII tabanlı, Figma'ya çevrilecek). Component inventory 5 katmanlı (atom/molekül/organizm/şablon/yardımcı) ~25 widget tanımı + bağımlılık haritası. **Eksikler:** (1) gerçek Figma yüksek çözünürlüklü mockup'lar tasarımcıya bırakıldı; (2) tablet detay master-detail layout sadece özet düzeyinde — gerçek pikselli mockup yok; (3) `error_catalog.md` G7 görevinde ayrıca yapılacak (wireframe'lerde sadece referans verildi).
+**Çıktı klasörü:** `test/fixtures/uyap/`
+**Süre:** 0.5-1 gün
 
-### G4. Lokalizasyon Hazırlığı (`assets/i18n/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 0.5 gün. **Çıktı:**
+Parser unit testleri için **tamamen kurgu** UYAP XML ve HTML örnek dosyaları. Gerçek dava/avukat verisi YOK.
 
-- `assets/i18n/tr.arb` — Türkçe string'ler (ARB formatı)
-- `assets/i18n/en.arb` — İngilizce
-- `assets/i18n/README.md` — Anahtar isimlendirme kuralı, yeni metin ekleme rehberi
+**Üretilecek dosyalar:**
 
-İlk versiyonda en az şu alanlar dolu olsun: onboarding, ana navigasyon, sync mesajları, hata mesajları, izin diyalogları, settings, common (Save/Cancel/Delete vb.). ~80-150 anahtar yeterli.
+- `test/fixtures/uyap/xml/case_simple.xml` — 1 dosya, 1 duruşma (en sade durum)
+- `test/fixtures/uyap/xml/case_multi_hearings.xml` — 1 dosya, 5 duruşma (sıralama testi)
+- `test/fixtures/uyap/xml/multi_cases.xml` — 3 dosya, her biri 1-3 duruşma (toplu export simülasyonu)
+- `test/fixtures/uyap/xml/edge_no_hearings.xml` — duruşması olmayan dosya
+- `test/fixtures/uyap/xml/edge_special_chars.xml` — Türkçe karakterli isim/mahkeme adı (encoding testi)
+- `test/fixtures/uyap/xml/edge_dates_mixed_format.xml` — aynı dosya içinde farklı tarih formatları
+- `test/fixtures/uyap/html/dosya_listesi_sample.html` — fake avukat dashboard, 5 dosyalı liste tablosu
+- `test/fixtures/uyap/html/dosya_detay_sample.html` — fake dosya detay sayfası, safahat ve duruşma listesi
+- `test/fixtures/uyap/html/durusma_takvimi_sample.html` — fake aylık duruşma takvimi sayfası
+- `test/fixtures/uyap/README.md` — fixture'ların kullanım rehberi: hangi parser senaryosu için, hangi alanları test eder
 
-**G4 Tamamlanma Notu (2026-05-06):** 3 dosya yazıldı: `tr.arb` (kaynak), `en.arb` (App Store EN için), `README.md` (translator brief + workflow). ~158 anahtar — hedef aralıkta. ICU MessageFormat (plural, placeholder) örnekleriyle. **Eksikler:** (1) `l10n.yaml` ve `pubspec.yaml` `flutter_localizations` entegrasyonu ana ajan görevidir (Faz 3); (2) error_catalog (G7) sonrasında error_* anahtarları tekrar gözden geçirilip senkronlanacak; (3) gerçek profesyonel çeviri review'ı yayın öncesi yapılmalı (özellikle EN, App Store onayı için).
+**Veri tipi kuralları:**
+- Tarafların adı: "Ahmet Yılmaz", "Şirket A.Ş." gibi yaygın isimler — YANLIZCA kurgu, gerçek olamayacak
+- Dosya numaraları: `2025/E.{rastgele}` formatında
+- Mahkeme isimleri: gerçek mahkeme isim formatı ("İstanbul 1. Asliye Hukuk Mahkemesi") ama dosya/karar bağlantısı yok
+- T.C. kimlik numaraları: HİÇ KULLANMA. Yer tutucu olarak `[ANONIM-TC]` yaz
+- Tarihler: 2025-2026 aralığında, Avrupa/İstanbul saat dilimi
+- HTML'lerde herhangi bir gerçek URL/path bırakma; tüm src/href'leri `#` veya `javascript:void(0)` yap
 
-### G5. Rakip Analizi (`docs/research/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 0.5 gün. **Çıktı:**
+**Neden önemli:** Ana ajan parser yazıp `flutter test` ile bunlarla doğrulayacak. Fixture olmadan parser TDD ile yazılamaz.
 
-- `docs/research/competitor_analysis.md` — UyumSoft, Hukuk360, Adli Takip, Kazancı Net, OnlineHukuk.net analizi: özellik matrisi, fiyat, mobil uygulama var mı, eksikleri ne, biz nasıl ayrışıyoruz
-- `docs/research/uyap_endpoints_public_knowledge.md` — KAMU bilgisi seviyesinde UYAP Avukat Portal akışı (login → menü → dosyalar → XML export). **Hiçbir bypass/scraping rehberi YAZMA**, sadece kullanıcının manuel akışını dokümante et.
+---
 
-**G5 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. Rakip analizi 6 oyuncu için özellik matrisi + müşteri şikayet dinamikleri + konumlandırma mottosu + SWOT içeriyor. UYAP doc kamu bilgisi sınırına sıkı bağlı kaldı — kapsam sınırı en üstte vurgulu, hiçbir bypass/automation rehberi yok, sadece "kullanıcının kendi tarayıcısında ne görüyor" dokümantasyonu. **Eksikler:** (1) Fiyat/özellik bilgileri 2026-05-06 snapshot'ı; pazarlama ekibi yayın öncesi refresh etmeli; (2) müşteri şikayet yüzdeleri tahmini, App Store/Play yorumları manuel sayım yapılmadı.
+### G10. Onboarding & KVKK Rıza UI Copy (Final Metinler)
 
-### G6. Avukat Persona ve User Journey (`docs/research/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 0.5 gün. **Çıktı:**
+**Çıktı dosyaları:**
+- `docs/design/copy_onboarding.md` (yeni)
+- `assets/i18n/tr.arb` ve `assets/i18n/en.arb` — yeni anahtarlar EKLE (mevcut anahtarlara dokunma, sadece append)
 
-- `docs/research/personas.md` — 3 persona: solo avukat, küçük büro ortağı, stajyer/sekreter (sekreter avukat hesabı kullanan)
-- `docs/research/user_journeys.md` — Her persona için tipik bir gün senaryosu, ağrı noktaları, uygulamanın hangi anlarda devreye gireceği
+**Süre:** 0.5 gün
 
-**G6 Tamamlanma Notu (2026-05-06):** 2 dosya yazıldı. 3 persona (P1 solo Mert, P2 büro ortağı Ayşegül, P3 stajyer Kerem) — her biri için bağlam, ekipman, hedefler, ağrı noktaları, tasarım sonuçları. Personalar **kurmaca** olarak işaretlendi (gerçek kişi değil). User journey 3 persona için saatlik akış + 3 cross-persona akış (onboarding, senkron kırılması, KVKK silme) içeriyor. **Eksikler:** (1) gerçek kullanıcı görüşmesi yapılmadı; persona detayları sektör gözlemine dayalı, beta testle valide edilmeli; (2) Faz 2 paylaşım modeli J3'te taslak — kesin tasarım Faz 2 başlamadan revize edilecek.
+**Üretilecek içerik:**
 
-### G7. Hata Mesajı Kataloğu (`docs/design/`) **(YAPILDI — 2026-05-06)**
-**Süre:** 0.5 gün. **Çıktı:**
+`docs/design/copy_onboarding.md`:
+- Sayfa 1 (Hoş geldin): başlık + 2-3 satır alt metin (TR + EN)
+- Sayfa 2 (Bu uygulama nasıl çalışır): "veriniz cihazınızda kalır" mesajı, 3-4 madde (TR + EN)
+- Sayfa 3 (KVKK Aydınlatma): tam KVKK rıza ekranı metni — 6-8 paragraf, kullanıcı dostu (G1'deki resmi metnin sadeleştirilmiş hali, link verecek). TR + EN
+- Sayfa 4 (Veri kaynağınız): "UYAP'tan veri çekmek için e-Devlet hesabınızla giriş yapacaksınız" açıklaması (TR + EN)
+- Sayfa 5 (İzinler): Takvim ve bildirim izinleri için açıklama (TR + EN)
+- Sayfa 6 (Hazırsınız!): bitiş mesajı, ilk senkron CTA (TR + EN)
+- Her sayfa için **tek cümle özet** (analytics event adı için)
+- "Şimdi değil" / "Daha sonra" gibi ertelendi seçeneği metinleri
 
-- `docs/design/error_catalog.md` — Kullanıcıya gösterilecek tüm hata türleri için kullanıcı dostu TR + EN metinler:
-  - WebView yüklenemedi
-  - e-Devlet bağlantı hatası
-  - SMS kodu zaman aşımı
-  - Senkron başarısız
-  - Takvim izni reddedildi
-  - Bildirim izni reddedildi
-  - DB şifreleme anahtarı bozuk
-  - vs. (~20-30 case)
-  
-  Her hata için: kısa başlık, açıklama, kullanıcının yapabileceği aksiyon.
+`tr.arb` / `en.arb` ekleri:
+- ~30-40 yeni anahtar: `onboarding_p1_title`, `onboarding_p1_subtitle`, `onboarding_kvkk_para1` ... vb.
+- ICU placeholder kullan ({appName} gibi)
 
-**G7 Tamamlanma Notu (2026-05-06):** 1 dosya yazıldı. 30 hata ID'si (E001–E030) — her biri için TR/EN başlık+gövde, aksiyon, kanal (Snackbar/Dialog/Banner/BottomSheet/EmptyState/InlineBanner), ARB anahtarı referansı, geliştirici notu. Loglama, erişilebilirlik, test stratejisi de dokümante. **Eksikler/yapılacaklar:** (1) Sadece 10 hata anahtarı G4 ARB'lerinde mevcut; kalan 20 hata için ARB ekleme G7 sonrası iş listesine yazıldı (dosya sonunda); (2) ARB anahtar konvansiyonu E0XX'e normalize edilecek (ana ajan veya G4 revizyonu); (3) Sentry backend bağlanması Faz 5 işi.
+**Kurallar:**
+- Hukuki dilden kaç, kullanıcı dostu yaz
+- Avukatlara hitap ediyorsun: "siz" formal kullan, jargonu açıkla
+- TR ve EN paralel yazılmalı, anahtar isimleri aynı
+
+---
+
+### G11. In-App Help & SSS İçeriği
+
+**Çıktı klasörü:** `docs/help/`
+**Süre:** 0.5-1 gün
+
+Uygulama içi "Yardım" bölümünde gösterilecek SSS, sorun giderme rehberi ve sözlük.
+
+**Üretilecek dosyalar:**
+
+- `docs/help/faq.md` — En az 20 SSS sorusu/cevabı:
+  - "UYAP şifrem sizde saklanır mı?" (KVKK paniği)
+  - "İlk senkron neden uzun sürüyor?"
+  - "Duruşma takvimimde görünmeyen dosya var, ne yapmalıyım?"
+  - "Senkron başarısız oldu, ne yapayım?"
+  - "Mobil İmza ile UYAP girişi destekleniyor mu?"
+  - "İki cihazda kullanabilir miyim?"
+  - "Verilerimi nasıl silerim?"
+  - "Bildirim gelmiyor, ne yapmalıyım?"
+  - vb.
+- `docs/help/troubleshooting.md` — Adım adım sorun giderme:
+  - WebView yüklenmiyor
+  - Senkron sürekli kod istiyor
+  - Takvime yazmıyor
+  - Bildirim gecikiyor
+- `docs/help/glossary.md` — Uygulama içi terim sözlüğü: "Senkronizasyon", "Duruşma takvimi", "Cihaz takvimi", "KVKK rıza", "İdempotent merge" gibi 15-20 terim, kullanıcı diliyle açıklama
+
+**Kurallar:**
+- Türkçe, açık dil
+- Her FAQ cevabı 2-4 cümle, gerekirse linklere yönlendir
+- Resmi/teknik dilden kaç ama yanlış bilgi verme
+
+---
+
+### G12. Beta Tester Recruitment + Outreach Şablonları
+
+**Çıktı dosyaları:** `docs/marketing/beta/`
+**Süre:** 0.5 gün
+
+Yayın öncesi 5-10 avukatın beta'ya alınması için plan + iletişim şablonları.
+
+**Üretilecek dosyalar:**
+
+- `docs/marketing/beta/recruitment_plan.md` — Hedef profil (yaş, şehir, baro, dosya yoğunluğu), kanal listesi (LinkedIn, baro grupları, Twitter avukat çevresi, üniversite hocaları), aşama akışı (ilan → başvuru formu → mülakat → seçim → onboarding)
+- `docs/marketing/beta/outreach_email_tr.md` — TestFlight/Play beta davet maili (TR), 200 kelime
+- `docs/marketing/beta/outreach_linkedin_tr.md` — LinkedIn DM şablonu (TR), 80 kelime
+- `docs/marketing/beta/feedback_survey.md` — Beta sonu anketi soruları (10-12 soru: NPS, en sevdiğiniz özellik, en kötü deneyim, sorun gördüğünüz alanlar, bug bildirimi)
+- `docs/marketing/beta/onboarding_checklist.md` — Beta tester'a ilk gün ne yapması gerektiğini anlatan adım listesi
+
+**Kurallar:**
+- Mailler kişisel ton, otomatize görünmesin
+- Avukatlara saygılı dil ("Sayın Avukat", "Beyefendi/Hanımefendi")
+- KVKK ve gizlilik kısaca vurgulanmalı (ama paniğe yol açmadan)
+
+---
+
+### G13. Müşteri Destek Playbook'u
+
+**Çıktı dosyası:** `docs/operations/support_playbook.md`
+**Süre:** 0.5 gün
+
+Yayın sonrası kullanıcı destek talepleri için yanıt şablonları + eskalasyon akışı.
+
+**Üretilecek içerik:**
+
+- Tipik destek senaryoları (15-20):
+  - "UYAP'a giriş yapamıyorum" → adım adım yönlendirme
+  - "Senkron yapmıyor" → diagnostic akış
+  - "Takvime yazmadı" → izin kontrolü, app yeniden başlatma
+  - "Şifremi sizinle paylaşmak istemiyorum" → güven inşası, mimari açıklaması
+  - "İade istiyorum" → store iade prosedürü
+  - vb.
+- Her senaryo için: kullanıcı diline çeviri + 3-5 satır profesyonel yanıt + iç eskalasyon notu
+- E-posta imza şablonu
+- Eskalasyon kuralları: ne zaman geliştirici ekibe iletilir, kritik bug protokolü
+- Yanıt SLA hedefleri (örn. 24 saat ilk yanıt, 72 saat çözüm)
+
+**Kurallar:**
+- Profesyonel, empatik dil
+- Asla "biz suçluyuz" deme; "yaşadığınız sorun için üzgünüz, çözmek için..." formatı
+- KVKK soruları için hazır referans cevap (G1 dokümanlarına link ile)
 
 ---
 
 ## Yapılacaklar Tablosu
 
-| ID | Görev | Tahmini Süre | Durum |
-|---|---|---|---|
-| G1 | Hukuki Metinler Paketi | 1 gün | **(YAPILDI — 2026-05-06)** — kuruluş bilgileri placeholder; bilişim hukukçusu onayı bekliyor |
-| G2 | Store Metadata | 0.5 gün | **(YAPILDI — 2026-05-06)** — brief tamam; gerçek görseller (screenshot/ikon) tasarımcıya bırakıldı |
-| G3 | Design System + Wireframe | 1 gün | **(YAPILDI — 2026-05-06)** — text-only; Figma mockup tasarımcıya |
-| G4 | Lokalizasyon ARB | 0.5 gün | **(YAPILDI — 2026-05-06)** — ~158 anahtar; pubspec/l10n.yaml entegrasyonu ana ajana |
-| G5 | Rakip Analizi + UYAP akış | 0.5 gün | **(YAPILDI — 2026-05-06)** — fiyat/özellik snapshot 2026-05; refresh önerilir |
-| G6 | Persona + User Journey | 0.5 gün | **(YAPILDI — 2026-05-06)** — kurmaca personalar; beta sonrası valide edilecek |
-| G7 | Hata Mesajı Kataloğu | 0.5 gün | **(YAPILDI — 2026-05-06)** — 30 hata ID; 20'sinin ARB anahtarı eklenecek |
+| ID | Görev | Tahmini Süre | Klasör | Durum |
+|---|---|---|---|---|
+| G8 | UYAP Veri Şeması Detay Dokümantasyonu | 1 gün | `docs/research/uyap_schema/` | bekliyor |
+| G9 | Synthetic UYAP Test Fixture'ları | 0.5-1 gün | `test/fixtures/uyap/` | bekliyor |
+| G10 | Onboarding & KVKK Rıza UI Copy | 0.5 gün | `docs/design/`, `assets/i18n/` | bekliyor |
+| G11 | In-App Help & SSS | 0.5-1 gün | `docs/help/` | bekliyor |
+| G12 | Beta Recruitment + Outreach | 0.5 gün | `docs/marketing/beta/` | bekliyor |
+| G13 | Müşteri Destek Playbook | 0.5 gün | `docs/operations/` | bekliyor |
 
-**Toplam: ~4.5 gün.**
+**Toplam: ~3-4 gün.**
 
-Sıra serbest, **bağımlılık yok** — her görev kendi başına başlatılıp bitirilebilir. Tercihen G1 ve G2 ilk bitsin (yayın için kritik); G3-G7 paralel.
+**Sıra önerisi (ana ajan açısından önem sırası):**
+1. **G8 (en kritik)** — parser yazımı buna bağlı
+2. **G9 (G8 sonrası)** — parser test'leri buna bağlı
+3. G10 — onboarding feature başladığında lazım
+4. G11, G12, G13 — sonraki haftalarda yetişir
+
+G8 ve G9 birbirine bağlı: G8'i yazarken referans alacağı şema, G9 fixture'ında kullanılacak. Aynı kişi yapsın iyi olur.
 
 ## Bittiğinde
 
-Tüm görevler tamamlanınca bu dosyaya `**(TÜMÜ TAMAMLANDI — tarih)**` notu düş, ana ajan PR'ları merge'leyince tasks.md'yi `tasks_archive_phase0.md` olarak yeniden adlandır.
+Tüm görevler tamamlanınca bu dosyaya `**(TÜMÜ TAMAMLANDI — tarih)**` notu düş, ana ajan PR'ları merge'leyince tasks.md'yi `tasks_archive_phase1.md` olarak yeniden adlandır ve yeni bir tasks.md oluştur (Faz 2 görevleri için).
 
 ---
 
-**(TÜMÜ TAMAMLANDI — 2026-05-06)**
+## Geçmiş Versiyonlar
 
-İkinci ajan görevlerinin (G1–G7) tamamı tek oturumda, doğrudan `main` dalına atomik commit'ler halinde tamamlandı (PR/branch akışı yerine — kullanıcı bu cihazda push yapmıyor). Her görev için tamamlanma notu içinde "eksikler" satırı bulunuyor; özet:
-
-- **Yayın öncesi doldurulacak placeholder'lar:** kuruluş bilgileri (unvan, MERSİS, KEP, e-posta, adres, VERBİS, başvuru no, domain) — hukuki ve marketing dosyalarında köşeli parantezde işaretli.
-- **Bilişim hukukçusu onayı bekleyen:** G1 hukuki paket (KVKK, gizlilik TR/EN, kullanım şartları, UYAP disclaimer).
-- **Tasarımcıya devredilenler:** G2 screenshot ve ikon görselleri, G3 Figma yüksek çözünürlüklü mockup'lar.
-- **Profesyonel çeviri review'ı yayın öncesi:** G4 EN ARB (App Store onayı için).
-- **Beta sonrası valide edilecek:** G6 personalar (kurmaca, gerçek görüşme yapılmadı).
-- **G7 → G4 senkron eksiği:** 20 hata için ARB anahtarı G4 dosyalarına eklenmeli; G4 revizyonu sırasında E0XX konvansiyonuna geçilecek.
-- **Ana ajan görevi:** `pubspec.yaml` `flutter_localizations` + `l10n.yaml` entegrasyonu (Faz 3'te işlenecek).
+- **v1 (2026-05-06)**: G1-G7 tamamlandı (legal, marketing, design system, i18n, competitor analysis, personas, error catalog). Detay için `git log --grep="docs:" --oneline | head -20`.
