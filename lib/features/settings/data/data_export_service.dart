@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:law/core/db/database.dart';
 import 'package:law/core/db/database_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 /// Yerel veritabanı içeriğini JSON olarak dışa aktarır.
 ///
@@ -37,6 +40,17 @@ class DataExportService {
       return const JsonEncoder.withIndent('  ').convert(map);
     }
     return jsonEncode(map);
+  }
+
+  /// JSON içeriği temp dizinine yazıp dosya yolunu döner. Caller bu yolu
+  /// `share_plus` ile paylaşabilir.
+  Future<String> exportToTempFile() async {
+    final json = await exportAsJsonString();
+    final dir = await getTemporaryDirectory();
+    final stamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+    final file = File(p.join(dir.path, 'law_export_$stamp.json'));
+    await file.writeAsString(json);
+    return file.path;
   }
 
   Map<String, dynamic> _caseToMap(Case c) => <String, dynamic>{

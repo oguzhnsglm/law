@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/hearing_view_model.dart';
 import '../state/hearings_today_provider.dart';
@@ -15,15 +16,23 @@ class HearingsTodayScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bugün')),
-      body: asyncGrouped.when(
-        data: (grouped) {
-          if (grouped.isEmpty) {
-            return const _EmptyState();
-          }
-          return _GroupedHearingList(grouped: grouped);
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => _ErrorState(message: err.toString()),
+      body: RefreshIndicator(
+        onRefresh: () async => context.go('/sync'),
+        child: asyncGrouped.when(
+          data: (grouped) {
+            if (grouped.isEmpty) {
+              return ListView(
+                children: const [
+                  SizedBox(height: 200),
+                  _EmptyState(),
+                ],
+              );
+            }
+            return _GroupedHearingList(grouped: grouped);
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, _) => _ErrorState(message: err.toString()),
+        ),
       ),
     );
   }
@@ -40,7 +49,16 @@ class _GroupedHearingList extends StatelessWidget {
     void addSection(String title, List<HearingViewModel> items) {
       if (items.isEmpty) return;
       sections.add(_SectionHeader(title: title, count: items.length));
-      sections.addAll(items.map((h) => HearingCard(viewModel: h)));
+      sections.addAll(items.map((h) => Builder(
+            builder: (context) => HearingCard(
+              viewModel: h,
+              onTap: () {
+                if (GoRouter.maybeOf(context) != null) {
+                  context.go('/hearing/${h.hearing.id}');
+                }
+              },
+            ),
+          )));
     }
 
     addSection('Bugün', grouped.today);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../state/cases_filter.dart';
 import '../state/cases_list_provider.dart';
@@ -29,7 +30,20 @@ class _CasesListScreenState extends ConsumerState<CasesListScreen> {
     final asyncCases = ref.watch(filteredCasesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dosyalar')),
+      appBar: AppBar(
+        title: const Text('Dosyalar'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.sync),
+            tooltip: 'Senkronize et',
+            onPressed: () {
+              if (GoRouter.maybeOf(context) != null) {
+                context.go('/sync');
+              }
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -85,8 +99,14 @@ class _CasesListScreenState extends ConsumerState<CasesListScreen> {
                 return ListView.separated(
                   itemCount: cases.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
-                  itemBuilder: (context, i) =>
-                      CaseListTile(caseModel: cases[i]),
+                  itemBuilder: (context, i) => CaseListTile(
+                    caseModel: cases[i],
+                    onTap: () {
+                      if (GoRouter.maybeOf(context) != null) {
+                        context.go('/case/${cases[i].id}');
+                      }
+                    },
+                  ),
                 );
               },
               loading: () =>

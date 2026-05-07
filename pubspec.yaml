@@ -49,6 +49,9 @@ dependencies:
   intl: ^0.20.2
   timezone: ^0.9.4
 
+  # Paylaşma (export → file → share sheet)
+  share_plus: ^10.1.4
+
   # Yardımcılar
   logger: ^2.5.0
   freezed_annotation: ^3.1.0

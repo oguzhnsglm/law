@@ -6,6 +6,7 @@ import '../features/cases/presentation/cases_list_screen.dart';
 import '../features/hearings/presentation/hearing_detail_screen.dart';
 import '../features/hearings/presentation/hearings_today_screen.dart';
 import '../features/onboarding/data/onboarding_completion_repository.dart';
+import '../features/onboarding/data/real_permission_asker.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/shell/app_shell.dart';
@@ -42,6 +43,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => OnboardingScreen(
+          permissionAsker: const RealPermissionAsker(),
           onCompleted: () async {
             final repo = ref.read(onboardingCompletionRepositoryProvider);
             await repo.markCompleted();

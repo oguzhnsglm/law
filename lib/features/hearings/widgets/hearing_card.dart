@@ -8,11 +8,29 @@ class HearingCard extends StatelessWidget {
   const HearingCard({
     required this.viewModel,
     this.onTap,
+    this.now,
     super.key,
   });
 
   final HearingViewModel viewModel;
   final VoidCallback? onTap;
+
+  /// Test'lerde "şimdi"yi sabitlemek için override edilebilir; null ise
+  /// `DateTime.now()` kullanılır.
+  final DateTime? now;
+
+  String? _relativeBadge() {
+    final reference = now ?? DateTime.now();
+    final diff = viewModel.tarih.difference(reference);
+    if (diff.isNegative) return null;
+    if (diff.inHours < 1) {
+      return '${diff.inMinutes} dk sonra';
+    }
+    if (diff.inHours < 6) {
+      return '${diff.inHours} sa sonra';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +85,35 @@ class HearingCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (_relativeBadge() != null) ...[
+                const SizedBox(width: 8),
+                _RelativeChip(label: _relativeBadge()!),
+              ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RelativeChip extends StatelessWidget {
+  const _RelativeChip({required this.label});
+  final String label;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onTertiaryContainer,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& 'C:\\\\Users\\\\ugras\\\\flutter\\\\bin\\\\flutter.bat' pub get 2>&1)",
+      "PowerShell(& 'C:\\\\Users\\\\ugras\\\\flutter\\\\bin\\\\flutter.bat' analyze 2>&1)"
+    ]
+  }
+}
