@@ -43,10 +43,23 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | 1.3 | Drift + SQLCipher şema | **(YAPILDI — 2026-05-06, 4 tablo, 4 DAO, secure key, 10 test geçti)** |
 | F1-F4 | Onboarding + Settings + Cases + Hearings (paralel ajan) | **(YAPILDI — 2026-05-07, 49 test, merge `e7f905d`, fix `4bdc8c7`)** |
 | 1.5 | Tarih parse util + testleri | **(YAPILDI — 2026-05-07, TrDateParser, 22 test, 6 format desteği)** |
-| 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (G8/G9 fixture'a bağlı) |
-| 2.1 | WebView entegrasyonu (`flutter_inappwebview`) | bekliyor |
-| 2.2 | e-Devlet → UYAP login akışı | bekliyor |
-| 2.3 | Idempotent merge servisi | bekliyor |
+| 1.4 | UYAP XML/HTML parser iskeleti | **(YAPILDI — 2026-05-07, UyapXmlParser, ParseResult, HearingDraft, 5 test)** |
+| 2.1 | WebView entegrasyonu (`flutter_inappwebview`) | **(YAPILDI — 2026-05-07, SyncWebViewScreen, JS injection ile XML fetch)** |
+| 2.2 | e-Devlet → UYAP login akışı | **(YAPILDI — 2026-05-07, host detection ile auto-trigger)** |
+| 2.3 | Idempotent merge servisi | **(YAPILDI — 2026-05-07, SyncService transaction'lı upsert, 4 test)** |
+| S1 | App Shell + Routing (go_router, NavigationBar) | **(YAPILDI — 2026-05-07, commit `9a05a3e`)** |
+| S3 | RealPermissionAsker (permission_handler) | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S4 | CalendarService (device_calendar wrapper) | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S5 | NotificationService (flutter_local_notifications) | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S6 | Case Detay Ekranı | **(YAPILDI — 2026-05-07, commit `9a05a3e`)** |
+| S7 | Hearing Detay Ekranı | **(YAPILDI — 2026-05-07, commit `9a05a3e`)** |
+| S11 | Pull-to-refresh + sync trigger + tap nav | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S12 | Shared empty/error state widgets | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S13 | CI workflow (.github/workflows/ci.yml) | **(YAPILDI — 2026-05-07, commit `61e712a`)** |
+| S14 | Hearing time badge ("X sa sonra") | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| S15 | share_plus + exportToTempFile | **(YAPILDI — 2026-05-07, commit `a0cd4b8`)** |
+| iOS/Android perm config | Info.plist + AndroidManifest.xml izinleri | **(YAPILDI — 2026-05-07, commit `61e712a`)** |
+| S2 | Lokalizasyon entegrasyonu (ARB → AppLocalizations) | **(BEKLİYOR — büyük refactor, ayrı oturumda Sonnet alt-ajana delege edilecek)** |
 
 Detay: [README.md §8 yol haritası](README.md).
 
