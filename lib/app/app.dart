@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'router.dart';
 import 'theme.dart';
 
 class LawApp extends ConsumerWidget {
@@ -8,22 +9,13 @@ class LawApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
+    final router = ref.watch(appRouterProvider);
+    return MaterialApp.router(
       title: 'Law',
       theme: lightTheme(),
       darkTheme: darkTheme(),
-      home: const _PlaceholderHome(),
-    );
-  }
-}
-
-class _PlaceholderHome extends StatelessWidget {
-  const _PlaceholderHome();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Law — geliştirme aşaması')),
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
