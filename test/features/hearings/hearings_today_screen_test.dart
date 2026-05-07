@@ -24,32 +24,28 @@ HearingViewModel _vm(DateTime t, String esas, String mahkeme) {
   );
 }
 
-Widget _wrap(List<Override> overrides) {
-  return ProviderScope(
-    overrides: overrides,
-    child: const MaterialApp(home: HearingsTodayScreen()),
-  );
-}
-
 void main() {
   group('HearingsTodayScreen', () {
     testWidgets('boş veri için empty state gösterir', (tester) async {
       await tester.pumpWidget(
-        _wrap([
-          upcomingHearingsProvider.overrideWith(
-            (ref) => Stream.value(
-              const GroupedHearings(
-                today: [],
-                tomorrow: [],
-                thisWeek: [],
-                later: [],
+        ProviderScope(
+          overrides: [
+            upcomingHearingsProvider.overrideWith(
+              (ref) => Stream.value(
+                const GroupedHearings(
+                  today: [],
+                  tomorrow: [],
+                  thisWeek: [],
+                  later: [],
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+          child: const MaterialApp(home: HearingsTodayScreen()),
+        ),
       );
 
-      await tester.pump(); // stream emission
+      await tester.pump();
       expect(find.text('Yakında duruşmanız yok'), findsOneWidget);
     });
 
@@ -60,21 +56,24 @@ void main() {
         final tomorrow = DateTime(2026, 5, 7, 14, 0);
 
         await tester.pumpWidget(
-          _wrap([
-            upcomingHearingsProvider.overrideWith(
-              (ref) => Stream.value(
-                GroupedHearings(
-                  today: [_vm(today, '2025/1234', 'İstanbul 1. Asliye Hukuk')],
-                  tomorrow: [_vm(tomorrow, '2025/5678', 'Ankara 3. İş')],
-                  thisWeek: const [],
-                  later: const [],
+          ProviderScope(
+            overrides: [
+              upcomingHearingsProvider.overrideWith(
+                (ref) => Stream.value(
+                  GroupedHearings(
+                    today: [_vm(today, '2025/1234', 'İstanbul 1. Asliye Hukuk')],
+                    tomorrow: [_vm(tomorrow, '2025/5678', 'Ankara 3. İş')],
+                    thisWeek: const [],
+                    later: const [],
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ],
+            child: const MaterialApp(home: HearingsTodayScreen()),
+          ),
         );
 
-        await tester.pump();
+        await tester.pumpAndSettle();
         expect(find.text('Bugün (1)'), findsOneWidget);
         expect(find.text('Yarın (1)'), findsOneWidget);
         expect(find.text('İstanbul 1. Asliye Hukuk'), findsOneWidget);
@@ -87,14 +86,16 @@ void main() {
     testWidgets('loading durumunda CircularProgressIndicator gösterir',
         (tester) async {
       await tester.pumpWidget(
-        _wrap([
-          upcomingHearingsProvider.overrideWith(
-            (ref) => const Stream<GroupedHearings>.empty(),
-          ),
-        ]),
+        ProviderScope(
+          overrides: [
+            upcomingHearingsProvider.overrideWith(
+              (ref) => const Stream<GroupedHearings>.empty(),
+            ),
+          ],
+          child: const MaterialApp(home: HearingsTodayScreen()),
+        ),
       );
 
-      // İlk frame loading state'i göstermeli (henüz emit yok).
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
@@ -102,23 +103,27 @@ void main() {
       final later = DateTime(2026, 5, 25, 10, 0);
 
       await tester.pumpWidget(
-        _wrap([
-          upcomingHearingsProvider.overrideWith(
-            (ref) => Stream.value(
-              GroupedHearings(
-                today: const [],
-                tomorrow: const [],
-                thisWeek: const [],
-                later: [_vm(later, '2025/9999', 'Bursa 5. Aile')],
+        ProviderScope(
+          overrides: [
+            upcomingHearingsProvider.overrideWith(
+              (ref) => Stream.value(
+                GroupedHearings(
+                  today: const [],
+                  tomorrow: const [],
+                  thisWeek: const [],
+                  later: [_vm(later, '2025/9999', 'Bursa 5. Aile')],
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+          child: const MaterialApp(home: HearingsTodayScreen()),
+        ),
       );
 
       await tester.pump();
-      expect(find.textContaining('Bugün'), findsNothing);
-      expect(find.textContaining('Yarın'), findsNothing);
+      expect(find.textContaining('Bugün ('), findsNothing);
+      expect(find.textContaining('Yarın ('), findsNothing);
+      expect(find.textContaining('Bu hafta ('), findsNothing);
       expect(find.text('Sonra (1)'), findsOneWidget);
     });
   });

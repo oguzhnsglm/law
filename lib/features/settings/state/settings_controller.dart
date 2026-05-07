@@ -46,14 +46,14 @@ class SettingsController extends AsyncNotifier<SettingsState> {
 
   Future<void> updateProfile(UserProfile profile) async {
     state = AsyncValue.data(
-      (state.valueOrNull ?? SettingsState.initial).copyWith(profile: profile),
+      (state.value ?? SettingsState.initial).copyWith(profile: profile),
     );
     await ref.read(userProfileRepositoryProvider).save(profile);
   }
 
   Future<void> updateNotifications(NotificationPrefs prefs) async {
     state = AsyncValue.data(
-      (state.valueOrNull ?? SettingsState.initial)
+      (state.value ?? SettingsState.initial)
           .copyWith(notifications: prefs),
     );
     await ref.read(notificationPrefsRepositoryProvider).save(prefs);

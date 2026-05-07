@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/data_export_service.dart';
 import '../data/data_purge_service.dart';
-import '../data/notification_prefs.dart';
 import '../data/user_profile.dart';
 import '../state/settings_controller.dart';
 

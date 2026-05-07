@@ -17,7 +17,8 @@ class HearingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final timeFormat = DateFormat.Hm('tr_TR');
+    // 24-saat HH:mm — locale-agnostic, intl locale data init'e bağımlı değil.
+    final timeFormat = DateFormat.Hm();
     final time = timeFormat.format(viewModel.tarih);
 
     return Card(

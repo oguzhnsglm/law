@@ -84,7 +84,7 @@ class _CasesListScreenState extends ConsumerState<CasesListScreen> {
                 }
                 return ListView.separated(
                   itemCount: cases.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, i) =>
                       CaseListTile(caseModel: cases[i]),
                 );

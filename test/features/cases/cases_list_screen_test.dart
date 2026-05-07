@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:law/core/db/database.dart';
 import 'package:law/features/cases/presentation/cases_list_screen.dart';
-import 'package:law/features/cases/state/cases_filter.dart';
 import 'package:law/features/cases/state/cases_list_provider.dart';
 
 Case _case(int id, String dosyaNo, String mahkeme, {String? durum}) {
@@ -20,20 +19,16 @@ Case _case(int id, String dosyaNo, String mahkeme, {String? durum}) {
   );
 }
 
-Widget _wrap(List<Override> overrides) {
-  return ProviderScope(
-    overrides: overrides,
-    child: const MaterialApp(home: CasesListScreen()),
-  );
-}
-
 void main() {
   group('CasesListScreen', () {
     testWidgets('boş veri için empty state gösterir', (tester) async {
       await tester.pumpWidget(
-        _wrap([
-          allCasesStreamProvider.overrideWith((ref) => Stream.value(const [])),
-        ]),
+        ProviderScope(
+          overrides: [
+            allCasesStreamProvider.overrideWith((ref) => Stream.value(const [])),
+          ],
+          child: const MaterialApp(home: CasesListScreen()),
+        ),
       );
       await tester.pump();
       expect(find.text('Henüz dosya yok, senkronize et'), findsOneWidget);
@@ -45,9 +40,12 @@ void main() {
         _case(2, '2024/5678', 'Ankara 3. İş', durum: 'Kapalı'),
       ];
       await tester.pumpWidget(
-        _wrap([
-          allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
-        ]),
+        ProviderScope(
+          overrides: [
+            allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
+          ],
+          child: const MaterialApp(home: CasesListScreen()),
+        ),
       );
       await tester.pump();
 
@@ -65,9 +63,12 @@ void main() {
           _case(2, '2024/5678', 'Ankara 3. İş'),
         ];
         await tester.pumpWidget(
-          _wrap([
-            allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
-          ]),
+          ProviderScope(
+            overrides: [
+              allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
+            ],
+            child: const MaterialApp(home: CasesListScreen()),
+          ),
         );
         await tester.pump();
 
@@ -87,13 +88,15 @@ void main() {
           _case(2, '2024/5678', 'M2', durum: 'Kapalı'),
         ];
         await tester.pumpWidget(
-          _wrap([
-            allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
-          ]),
+          ProviderScope(
+            overrides: [
+              allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
+            ],
+            child: const MaterialApp(home: CasesListScreen()),
+          ),
         );
         await tester.pump();
 
-        // "Kapalı" chip'ine tıkla
         await tester.tap(find.widgetWithText(FilterChip, 'Kapalı'));
         await tester.pump();
 
@@ -107,17 +110,16 @@ void main() {
       (tester) async {
         final cases = [_case(1, '2025/1234', 'M', durum: 'Açık')];
         await tester.pumpWidget(
-          _wrap([
-            allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
-            casesQueryControllerProvider.overrideWith(() {
-              final c = CasesQueryController();
-              return c;
-            }),
-          ]),
+          ProviderScope(
+            overrides: [
+              allCasesStreamProvider.overrideWith((ref) => Stream.value(cases)),
+              casesQueryControllerProvider.overrideWith(CasesQueryController.new),
+            ],
+            child: const MaterialApp(home: CasesListScreen()),
+          ),
         );
         await tester.pump();
 
-        // Eşleşmeyen aramayı yaz
         await tester.enterText(find.byType(TextField), 'xxxxxxxxx');
         await tester.pump();
 

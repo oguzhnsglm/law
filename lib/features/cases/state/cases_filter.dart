@@ -19,7 +19,12 @@ enum CasesFilter {
   bool matches(String? durum) {
     if (this == CasesFilter.all) return true;
     if (durum == null) return false;
-    final lower = durum.toLowerCase();
+    // Türkçe I/ı/i/İ probleminin etrafından dolaş: önce büyük I'ları doğru
+    // küçültmek için Türkçe pre-map yap, sonra standart toLowerCase'e ver.
+    final lower = durum
+        .replaceAll('İ', 'i')
+        .replaceAll('I', 'ı')
+        .toLowerCase();
     switch (this) {
       case CasesFilter.open:
         return lower.contains('açık');
