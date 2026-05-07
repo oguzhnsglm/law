@@ -41,8 +41,9 @@ Faz 0 büyük ölçüde tamam; Flutter SDK kurulumu kullanıcıdan bekleniyor (F
 | 1.1 | `flutter create` ve klasör iskeleti | **(YAPILDI — 2026-05-06, scaffold + Android/iOS native dirs)** |
 | 1.2 | `pubspec.yaml` paket ekleme | **(YAPILDI — 2026-05-06, 159 paket çözüldü, analyze temiz)** |
 | 1.3 | Drift + SQLCipher şema | **(YAPILDI — 2026-05-06, 4 tablo, 4 DAO, secure key, 10 test geçti)** |
-| 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (örnek fixture'a bağlı) |
-| 1.5 | Tarih parse util + testleri | bekliyor |
+| F1-F4 | Onboarding + Settings + Cases + Hearings (paralel ajan) | **(YAPILDI — 2026-05-07, 49 test, merge `e7f905d`, fix `4bdc8c7`)** |
+| 1.5 | Tarih parse util + testleri | **(YAPILDI — 2026-05-07, TrDateParser, 22 test, 6 format desteği)** |
+| 1.4 | UYAP XML/HTML parser iskeleti | bekliyor (G8/G9 fixture'a bağlı) |
 | 2.1 | WebView entegrasyonu (`flutter_inappwebview`) | bekliyor |
 | 2.2 | e-Devlet → UYAP login akışı | bekliyor |
 | 2.3 | Idempotent merge servisi | bekliyor |
