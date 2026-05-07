@@ -66,5 +66,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Duruşmalarınız cihazınızın takvimine eklenir; bunun için takvim erişimi gerekir.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Duruşmalarınızı cihazınızın takvimine yazıp güncellemek için tam erişim gerekir.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Duruşmalarınız cihazınızın takvimine eklenir.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

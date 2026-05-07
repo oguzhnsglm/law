@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/db/database_provider.dart';
+import '../../../core/notifications/notification_service.dart';
 import '../../../core/parse/parse_result.dart';
 
 /// Bir senkron çalışmasının özet sonucu.
@@ -30,9 +31,11 @@ class SyncSummary {
 ///
 /// Aynı [ParseResult] iki kez merge edilirse 0 değişiklik olmalı.
 class SyncService {
-  SyncService(this._db);
+  SyncService(this._db, {NotificationService? notifications})
+      : _notifications = notifications;
 
   final AppDatabase _db;
+  final NotificationService? _notifications;
 
   Future<SyncSummary> merge(ParseResult parsed) async {
     final start = DateTime.now();
@@ -91,6 +94,18 @@ class SyncService {
       );
     }
 
+    // Yeni/güncellenmiş duruşmalar için bildirim schedule et (best-effort).
+    if (_notifications != null) {
+      try {
+        final upcoming = await _db.hearingsDao.getUpcoming(DateTime.now());
+        for (final h in upcoming) {
+          await _notifications.scheduleForHearing(h);
+        }
+      } catch (_) {
+        // Bildirim scheduling başarısızsa senkronu bozma; sessiz geç.
+      }
+    }
+
     final ms = DateTime.now().difference(start).inMilliseconds;
     return SyncSummary(
       added: added,
@@ -112,5 +127,6 @@ class SyncService {
 
 final syncServiceProvider = Provider<SyncService>((ref) {
   final db = ref.watch(appDatabaseProvider);
-  return SyncService(db);
+  final notifications = ref.watch(notificationServiceProvider);
+  return SyncService(db, notifications: notifications);
 });
