@@ -1,20 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/calendar/calendar_service.dart';
 import '../../../core/db/database.dart';
 import '../../../core/db/database_provider.dart';
+import '../../../core/notifications/notification_service.dart';
+import '../widgets/notes_section.dart';
 
 /// Bir duruşmanın tam detayı + manuel notlar + dosya kısa özeti.
-class HearingDetailScreen extends ConsumerWidget {
+class HearingDetailScreen extends ConsumerStatefulWidget {
   const HearingDetailScreen({required this.hearingId, super.key});
 
   final int hearingId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncData = ref.watch(_hearingDetailProvider(hearingId));
+  ConsumerState<HearingDetailScreen> createState() =>
+      _HearingDetailScreenState();
+}
+
+class _HearingDetailScreenState extends ConsumerState<HearingDetailScreen> {
+  bool _notifEnabled = true;
+  bool _busy = false;
+
+  Future<String?> _selectedCalendarId() async {
+    const storage = FlutterSecureStorage();
+    return storage.read(key: 'selected_calendar_id_v1');
+  }
+
+  Future<void> _toggleCalendar(Hearing h, Case? c) async {
+    if (c == null) return;
+    setState(() => _busy = true);
+    final calendarId = await _selectedCalendarId();
+    if (calendarId == null) {
+      _showSnack(
+          'Önce Ayarlar > Takvim Seçimi\'nden bir takvim seçin.');
+      setState(() => _busy = false);
+      return;
+    }
+    final svc = ref.read(calendarServiceProvider);
+    if (h.takvimEventId == null) {
+      await svc.writeOrUpdate(
+        h: h,
+        calendarId: calendarId,
+        mahkemeAdi: c.mahkemeAdi,
+        dosyaNo: c.dosyaNo,
+      );
+      _showSnack('Takvime eklendi.');
+    } else {
+      await svc.remove(h: h, calendarId: calendarId);
+      _showSnack('Takvimden kaldırıldı.');
+    }
+    ref.invalidate(_hearingDetailProvider(widget.hearingId));
+    setState(() => _busy = false);
+  }
+
+  Future<void> _toggleNotification(Hearing h) async {
+    setState(() {
+      _notifEnabled = !_notifEnabled;
+      _busy = true;
+    });
+    final svc = ref.read(notificationServiceProvider);
+    if (_notifEnabled) {
+      await svc.scheduleForHearing(h);
+      _showSnack('Hatırlatma planlandı.');
+    } else {
+      await svc.cancelForHearing(h.id);
+      _showSnack('Hatırlatma iptal edildi.');
+    }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  void _showSnack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncData = ref.watch(_hearingDetailProvider(widget.hearingId));
     return Scaffold(
       appBar: AppBar(title: const Text('Duruşma')),
       body: asyncData.when(
@@ -24,23 +91,18 @@ class HearingDetailScreen extends ConsumerWidget {
           if (data == null) {
             return const Center(child: Text('Duruşma bulunamadı'));
           }
-          return _Body(data: data);
+          return _buildBody(data);
         },
       ),
     );
   }
-}
 
-class _Body extends StatelessWidget {
-  const _Body({required this.data});
-  final _HearingWithCase data;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildBody(_HearingWithCase data) {
     final theme = Theme.of(context);
     final h = data.hearing;
     final dateFmt = DateFormat('dd MMMM yyyy, HH:mm');
     final localDate = h.durusmaTarihi.toLocal();
+    final inCalendar = h.takvimEventId != null;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -74,6 +136,31 @@ class _Body extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 12),
+        Card(
+          child: Column(
+            children: [
+              SwitchListTile(
+                secondary: const Icon(Icons.event_outlined),
+                title: const Text('Cihaz takvimine ekle'),
+                subtitle: Text(
+                    inCalendar ? 'Takvimde kayıtlı' : 'Henüz eklenmemiş'),
+                value: inCalendar,
+                onChanged: _busy
+                    ? null
+                    : (_) => _toggleCalendar(h, data.caseModel),
+              ),
+              const Divider(height: 1),
+              SwitchListTile(
+                secondary: const Icon(Icons.notifications_outlined),
+                title: const Text('Bildirim hatırlatması'),
+                subtitle: const Text('1 gün ve 2 saat önce'),
+                value: _notifEnabled,
+                onChanged: _busy ? null : (_) => _toggleNotification(h),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 16),
         if (data.caseModel != null)
           Card(
@@ -87,25 +174,8 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 24),
         Text('Notlar', style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        // Notlar alt-listesi (kullanıcı manuel ekler)
-        const _NotesPlaceholder(),
+        NotesSection(hearingId: h.id),
       ],
-    );
-  }
-}
-
-class _NotesPlaceholder extends StatelessWidget {
-  const _NotesPlaceholder();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Center(
-        child: Text(
-          'Bu duruşmaya not eklenmemiş.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ),
     );
   }
 }

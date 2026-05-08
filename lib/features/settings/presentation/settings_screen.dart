@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../core/calendar/calendar_service.dart';
 import '../data/data_export_service.dart';
 import '../data/data_purge_service.dart';
 import '../data/user_profile.dart';
@@ -93,11 +96,26 @@ class _SettingsBody extends ConsumerWidget {
               : null,
         ),
         const Divider(),
+        const _SectionHeader('TAKVİM'),
+        ListTile(
+          leading: const Icon(Icons.event_outlined),
+          title: const Text('Yazılacak takvim'),
+          subtitle: const _SelectedCalendarSubtitle(),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => _selectCalendar(context, ref),
+        ),
+        const Divider(),
         const _SectionHeader('VERİLERİM'),
         ListTile(
+          leading: const Icon(Icons.share_outlined),
+          title: const Text('Verilerimi paylaş'),
+          subtitle: const Text('JSON dosyası olarak'),
+          onTap: () => _shareData(context, ref),
+        ),
+        ListTile(
           leading: const Icon(Icons.download_outlined),
-          title: const Text('Verilerimi dışa aktar'),
-          subtitle: const Text('JSON formatında'),
+          title: const Text('Verilerimi göster'),
+          subtitle: const Text('Ekranda inceleme'),
           onTap: () => _exportData(context, ref),
         ),
         ListTile(
@@ -160,6 +178,65 @@ class _SettingsBody extends ConsumerWidget {
     );
   }
 
+  Future<void> _shareData(BuildContext context, WidgetRef ref) async {
+    final path = await ref.read(dataExportServiceProvider).exportToTempFile();
+    if (!context.mounted) return;
+    await Share.shareXFiles(
+      [XFile(path, mimeType: 'application/json')],
+      subject: 'Law verilerim',
+    );
+  }
+
+  Future<void> _selectCalendar(BuildContext context, WidgetRef ref) async {
+    final svc = ref.read(calendarServiceProvider);
+    final granted = await svc.requestPermissions();
+    if (!context.mounted) return;
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Takvim izni reddedildi.')),
+      );
+      return;
+    }
+    final calendars = await svc.listWritableCalendars();
+    if (!context.mounted) return;
+    if (calendars.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Yazılabilir takvim bulunamadı.')),
+      );
+      return;
+    }
+    const storage = FlutterSecureStorage();
+    final current = await storage.read(key: 'selected_calendar_id_v1');
+    if (!context.mounted) return;
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: const Text('Takvim seç'),
+        children: [
+          for (final c in calendars)
+            ListTile(
+              leading: Icon(
+                c.id == current
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+              ),
+              title: Text(c.name ?? 'İsimsiz takvim'),
+              subtitle: Text(c.accountName ?? ''),
+              onTap: () => Navigator.of(ctx).pop(c.id ?? ''),
+            ),
+        ],
+      ),
+    );
+    if (selected != null && selected.isNotEmpty) {
+      await storage.write(key: 'selected_calendar_id_v1', value: selected);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Takvim kaydedildi.')),
+        );
+      }
+    }
+  }
+
   Future<void> _confirmPurge(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -192,6 +269,38 @@ class _SettingsBody extends ConsumerWidget {
         const SnackBar(content: Text('Tüm verileriniz silindi')),
       );
     }
+  }
+}
+
+class _SelectedCalendarSubtitle extends StatefulWidget {
+  const _SelectedCalendarSubtitle();
+
+  @override
+  State<_SelectedCalendarSubtitle> createState() =>
+      _SelectedCalendarSubtitleState();
+}
+
+class _SelectedCalendarSubtitleState
+    extends State<_SelectedCalendarSubtitle> {
+  String? _id;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    const storage = FlutterSecureStorage();
+    final id = await storage.read(key: 'selected_calendar_id_v1');
+    if (mounted) setState(() => _id = id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _id == null || _id!.isEmpty ? 'Henüz seçilmedi' : 'Takvim seçili',
+    );
   }
 }
 

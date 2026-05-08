@@ -108,6 +108,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        await tester.scrollUntilVisible(
+          find.text('Tüm verilerimi sil'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.tap(find.text('Tüm verilerimi sil'));
         await tester.pumpAndSettle();
 
