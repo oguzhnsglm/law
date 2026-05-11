@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/calendar/calendar_service.dart';
+import '../../auth/state/auth_controller.dart';
+import '../../billing/data/billing_service.dart';
+import '../../billing/state/subscription_controller.dart';
 import '../data/data_export_service.dart';
 import '../data/data_purge_service.dart';
 import '../data/user_profile.dart';
@@ -46,7 +50,16 @@ class _SettingsBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
+        // ── OTURUM ─────────────────────────────────────────────────────────
         const _SectionHeader('HESAP'),
+        _AuthAccountTile(onLogout: () => context.go('/login')),
+        // ── ABONELİK ───────────────────────────────────────────────────────
+        const Divider(),
+        const _SectionHeader('ABONELİK'),
+        const _SubscriptionTile(),
+        // ── PROFİL ─────────────────────────────────────────────────────────
+        const Divider(),
+        const _SectionHeader('PROFİL'),
         ListTile(
           leading: const Icon(Icons.person_outline),
           title: const Text('Profil bilgilerim'),
@@ -405,6 +418,70 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
           child: const Text('Kaydet'),
         ),
       ],
+    );
+  }
+}
+
+// ── Auth account tile ────────────────────────────────────────────────────────
+
+/// Oturum açmış kullanıcının e-postasını ve çıkış butonunu gösterir.
+class _AuthAccountTile extends ConsumerWidget {
+  const _AuthAccountTile({required this.onLogout});
+
+  final VoidCallback onLogout;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncAuth = ref.watch(authStateProvider);
+    final email = asyncAuth.value?.email ?? '—';
+
+    return ListTile(
+      leading: const Icon(Icons.account_circle_outlined),
+      title: const Text('Giriş yapılan hesap'),
+      subtitle: Text(email),
+      trailing: TextButton(
+        onPressed: () async {
+          await ref.read(authControllerProvider.notifier).logout();
+          onLogout();
+        },
+        child: const Text('Çıkış Yap'),
+      ),
+    );
+  }
+}
+
+// ── Subscription tile ────────────────────────────────────────────────────────
+
+/// Abonelik durumu ve yönetim butonu.
+class _SubscriptionTile extends ConsumerWidget {
+  const _SubscriptionTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncSub = ref.watch(subscriptionStatusProvider);
+    final isActive = asyncSub.value ?? false;
+
+    return ListTile(
+      leading: Icon(
+        isActive ? Icons.workspace_premium : Icons.workspace_premium_outlined,
+        color: isActive
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.outline,
+      ),
+      title: const Text('Abonelik durumu'),
+      subtitle: Text(isActive ? 'Aktif' : 'Pasif'),
+      trailing: isActive
+          ? TextButton(
+              onPressed: () async {
+                final billing = ref.read(billingServiceProvider);
+                await billing.restorePurchases();
+              },
+              child: const Text('Geri yükle'),
+            )
+          : FilledButton(
+              onPressed: () => context.go('/paywall'),
+              child: const Text('Abone Ol'),
+            ),
     );
   }
 }

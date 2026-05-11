@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:law/features/auth/state/auth_controller.dart';
+import 'package:law/features/billing/state/subscription_controller.dart';
 import 'package:law/features/settings/data/notification_prefs.dart';
 import 'package:law/features/settings/data/user_profile.dart';
 import 'package:law/features/settings/presentation/settings_screen.dart';
@@ -29,6 +31,8 @@ Widget _wrap(SettingsState initial) {
   return ProviderScope(
     overrides: [
       settingsControllerProvider.overrideWith(() => _StubController(initial)),
+      authStateProvider.overrideWith((ref) async => null),
+      subscriptionStatusProvider.overrideWith((ref) async => false),
     ],
     child: const MaterialApp(home: SettingsScreen()),
   );
@@ -83,10 +87,22 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        await tester.scrollUntilVisible(
+          find.widgetWithText(SwitchListTile, '1 gün önce'),
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
+
         final SwitchListTile oneDay = tester.widget(
           find.widgetWithText(SwitchListTile, '1 gün önce'),
         );
         expect(oneDay.onChanged, isNull);
+
+        await tester.scrollUntilVisible(
+          find.widgetWithText(SwitchListTile, '2 saat önce'),
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
 
         final SwitchListTile twoHrs = tester.widget(
           find.widgetWithText(SwitchListTile, '2 saat önce'),
